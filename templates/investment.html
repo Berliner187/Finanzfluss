@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
+    <link type="text/css" href="{{ url_for('static', filename='css/sidebar.css')}}" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="image/png" href="{{ url_for('static', filename='img/favicon.png')}}" href="" rel="shortcut icon">
+    <link type="text/css" href="{{ url_for('static', filename='css/const.css')}}" rel="stylesheet" />
+    <!-- <link rel="stylesheet" href="../static/css/styles.css"> -->
+    <!-- <link rel="stylesheet" href="../static/css/sidebar.css"> -->
+
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <title>Investment - {{markets_db}}</title>
+
+</head>
+<body>
+    <nav>
+        <div>
+            <a class="btn_sidebar" href="/">Главная</a>
+            <a class="btn_sidebar" href="/investment">Торговля</a>
+            <a class="btn_sidebar" href="/markets">Рынки</a>
+            <a class="btn_sidebar" href="/portfolio">Портфель</a>
+        </div>
+    </nav>
+
+    <h1>{{markets_db}}</h1>
+
+    <div id="container_for_buy" class="container_for_buy">
+        <h2>Что купить?</h2>
+        <!-- СПИСОК АКЦИЙ ЗАПОЛНЯЕТСЯ АВТОМАТИЧЕСКИ -->
+        {% for dct in tickers %}
+        <div>
+
+            <div class="under-pills-collapsible">
+                <div>
+                    <img src="../static/img/icons/{{dct.ticker}}.png" alt="">
+                    <div>
+                        <span id="company_name_{{dct.ticker}}">{{ dct.shortname }}</span>
+                        <span name="company_ticker" id="company_ticker">{{ dct.ticker }}</span>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <span id="company_market_value">{{ dct.price }} $</span>
+                        <span id="company_day_percent">{{ dct.percent }} %</span>
+                    </div>
+                    <a id="more_{{dct.ticker}}" class="btn color_neutral" href="/s-and-p-500/{{dct.ticker}}">Подробнее</a>
+                </div>
+            </div>
+            
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        var button = document.querySelectorAll('a');
+        for(var i=0; i<button.length; i++){
+            button[i].addEventListener('click', function(e){
+                btnId = e.target.getAttribute('id');
+                btnId.id = btnId + '_' + i;
+                console.log(btnId);
+            })
+        }
+
+        // Получаем объект CSSStyleDeclaration 
+        let el = document.querySelectorAll('.quantity_buy_sell');
+        // Выводим в консоль объект CSSStyleDeclaration 
+        let elStyles = el.style;
+        console.log(elStyles);
+
+        function clickBuySell () {
+            let styleInput = document.querySelectorAll(".quantity_buy_sell")
+            styleInput.forEach(element=> (element.onmouseenter = function(e) {
+                element.style.width = '100%';
+                element.style.opacity = '1';
+            }));
+        }
+
+    </script>
+
+    <!-- Скрипт открывает скрытый контент PILLS по клику -->
+    <script>
+        let coll = document.getElementsByClassName('under-pills-collapsible');
+        for (let i = 0; i < coll.length; i++) {
+            coll[i].addEventListener('click', function() {
+                this.classList.toggle('active');
+                let content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    content.style.opacity = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    content.style.opacity = 1;
+                }
+            })
+        }
+    </script>
+
+</body>
+</html>

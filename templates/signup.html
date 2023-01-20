@@ -1,0 +1,27 @@
+{% extends 'base_registrierung.html' %}
+
+{% block body %}
+<body class="bg-signup">
+
+    <div class="login-container">
+
+        {% for cat, msg in get_flashed_messages(True) %}
+            <div class="flash {{cat}}">
+                <p>{{msg}}</p>
+            </div>
+        {% endfor %}
+
+        <h2>Регистрация</h2>
+        
+        <form method="POST">
+            <input class="input_bg" type="text" placeholder="логин" name="login" id="login">
+            <input class="input_bg" type="password" placeholder="пароль" name="password" id="password">
+            <input class="input_bg" type="password" placeholder="подтвердите пароль" name="confirm_password" id="password">
+            <input type="submit" name="sub-dat" class="btn-sub btn-sub-white btn-sub-animate" value="Зарегистрироваться">
+        </form>
+
+        <p>Есть аккаунт?  <a href="/login" class="simple-underline-style">Войти</a></p>
+    </div>
+
+</body>
+{% endblock %}

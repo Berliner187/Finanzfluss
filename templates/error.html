@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="image/png" href="{{ url_for('static', filename='img/icons/moon.png')}}" rel="shortcut icon">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
+    <link type="text/css" href="{{ url_for('static', filename='css/const.css')}}" rel="stylesheet" />
+    <title>{{error_code}}</title>
+</head>
+<body>
+
+    <nav class="sidebar-container">
+        <h1>FinanceFlow</h1>
+        <div>
+            <a class="underline-style" href="/">Главная</a>
+            <a class="underline-style" href="/transactions">Транзакции</a>
+            <a class="underline-style" href="/assets">Активы</a>
+            <a class="entry" href="/login" class="entry">Войти</a>
+        </div>
+    </nav>
+
+    <div class="glass-container">
+        <h2>{{ error_code }}</h2>
+        <p>{{ error_text }}</p>
+        <div class="buttons-container">
+            <a href="/">На главную</a>
+        </div>
+    </div>
+</body>
+</html>

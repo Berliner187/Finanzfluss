@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="image/png" href="{{ url_for('static', filename='img/favicon.png')}}" href="" rel="shortcut icon">
+    <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
+    <link type="text/css" href="{{ url_for('static', filename='css/const.css')}}" rel="stylesheet" />
+    <title>Finanzfluss</title>
+</head>
+<body>
+
+    <nav class="sidebar-container">
+        <h1>Finanzfluss</h1>
+        <div>
+            <a class="underline-style" href="/">Главная</a>
+            <a class="underline-style" href="/transactions">Транзакции</a>
+            <a class="underline-style" href="/bonds">Облигации</a>
+            <a class="entry" href="/login" class="entry">Войти</a>
+        </div>
+    </nav>
+
+    <div class="content-container">
+        <div class="categories-container">
+            <a href="#" class="categories-block balance">
+                <h2>На всех счетах</h2>
+                <span>$ 1727,19</span>
+            </a>
+            <a href="#" class="categories-block gray">
+                <h2>Расходы</h2>
+                <span>$ 92,95</span>
+            </a>
+            <a href="#" class="categories-block gray">
+                <h2>Доходы</h2>
+                <span>$ 200,02</span>
+            </a>
+            <a href="#" class="categories-block gray">
+                <h2>Долги</h2>
+                <span>$ -20,02</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="content-container">
+        <input type="number" name="" id="amount_input" value="сумма">
+        <div class="checkbox-container">
+            <div>
+                <input type="checkbox" name="" id="">
+                <label for="">Основной</label>
+            </div>
+            <div>
+                <input type="checkbox" name="" id="">
+                <label for="">Студенческий</label>
+            </div>
+            <div>
+                <input type="checkbox" name="" id="">
+                <label for="">Накопительный</label>
+            </div>
+            <button id="btn_submit">submit</button>
+        </div>
+
+    </div>
+
+    <div class="content-container">
+        <div class="separator-container">
+
+            <div class="accounts-container">
+                
+                <div class="accounts-title-block">
+                    <h2>Счета</h2>
+                    <h3>Доступно</h3>
+                </div>
+
+                <div class="accounts-available-block">
+                    <div>
+                        <span>Основной</span>
+                        <span>$ 2990,92</span>
+                    </div>
+                    <div>
+                        <span>Накопительный</span>
+                        <span>$ 392,92</span>
+                    </div>
+                    <div>
+                        <span>Студенческий</span>
+                        <span>$ 100,92</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div>
+                <h2>Последние транзакции</h2>
+                <div class="last-transactions-block">
+                    <h3>Четверг, 15 декабря</h3>
+                    <div>
+                        <span>Студенческий</span>
+                        <span>+100,92 $</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="assets">
+            
+        </div>
+
+    </div>
+
+</body>
+</html>

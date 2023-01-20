@@ -1,0 +1,22 @@
+{% extends 'base_registrierung.html' %}
+
+{% block body %}
+<body class="bg-login">
+
+    <div class="login-container">
+
+        <h2>Вход</h2>
+
+        <form action="POST">
+            <input class="input_bg" type="text" placeholder="логин" name="login" id="login">
+            <input class="input_bg" type="password" placeholder="пароль" name="password" id="password">
+            <input type="submit" name="sub-dat" class="btn-sub btn-sub-white btn-sub-animate" value="Войти">
+        </form>
+
+        <p>Забыли пароль? <a href="#">Сбросить</a></p>
+        <p>Нет аккаунта? <a href="/signup">Зарегистрироваться</a></p>
+
+    </div>
+
+</body>
+{% endblock %}
