@@ -199,7 +199,7 @@ def about_bond(ticker):
     # Суммарно вложено в бумагу
     total_invested = bond.get_summary_price_for_display()
     # Доля в портфеле
-    share_in_the_portfolio = bond.get_share_in_portfolio()
+    share_in_the_portfolio = bond_info.format_number(bond.get_share_in_portfolio())
 
     return render_template('about-bond.html',
                            ticker=ticker,
