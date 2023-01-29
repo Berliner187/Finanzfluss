@@ -17,35 +17,33 @@ class InfoBond:
         file = f'tmp/{self.bond}.dat'
         url = f'https://www.moex.com/ru/issue.aspx?board=TQCB&code={self.bond}'
 
+        profit, maturity_date, coupon, coupon_payment_date = [], [], [], []
+
         if os.path.exists(file):
-            profit, maturity_date, coupon, coupon_payment_date = [], [], [], []
             with open(file, 'r', encoding='UTF=8') as read_pars_data:
-                data = read_pars_data.readlines()
+                array = read_pars_data.readlines()
 
-                def template_get_content(element):
-                    return ' '.join(re.findall(r'>([^><]+)<', element))
+            def template_get_content(element):
+                return ' '.join(re.findall(r'>([^><]+)<', element))
 
-                array = data
+            data = array
+            for elem in range(len(data)):
+                if '?' not in template_get_content(data[elem]):
+                    if 'Доходность' in data[elem]:
+                        profit.append(template_get_content(data[elem]))
+                        profit.append(template_get_content(data[elem + 1]))
+                    elif 'Дата погашения' in data[elem]:
+                        maturity_date.append(template_get_content(data[elem]))
+                        maturity_date.append(template_get_content(data[elem + 1]))
+                    elif 'Сумма купона' in data[elem]:
+                        coupon.append(template_get_content(data[elem]))
+                        coupon.append(template_get_content(data[elem + 1]))
+                    elif 'Дата выплаты купона' in data[elem]:
+                        coupon_payment_date.append(template_get_content(data[elem]))
+                        coupon_payment_date.append(template_get_content(data[elem + 1]))
 
-                for elem in range(len(array)):
-                    if '?' not in template_get_content(array[elem]):
-                        if 'Доходность' in array[elem]:
-                            profit.append(template_get_content(array[elem]))
-                            profit.append(template_get_content(array[elem + 1]))
-                            # print(f'{template_get_content(array[elem])} --- {template_get_content(array[elem + 1])}')
-                        elif 'Дата погашения' in array[elem]:
-                            maturity_date.append(template_get_content(array[elem]))
-                            maturity_date.append(template_get_content(array[elem + 1]))
-                            # print(f'{template_get_content(array[elem])} --- {template_get_content(array[elem + 1])}')
-                        elif 'Сумма купона' in array[elem]:
-                            coupon.append(template_get_content(array[elem]))
-                            coupon.append(template_get_content(array[elem + 1]))
-                            # print(f'{template_get_content(array[elem])} --- {template_get_content(array[elem + 1])}')
-                        elif 'Дата выплаты купона' in array[elem]:
-                            coupon_payment_date.append(template_get_content(array[elem]))
-                            coupon_payment_date.append(template_get_content(array[elem + 1]))
-                            # print(f'{template_get_content(array[elem])} --- {template_get_content(array[elem + 1])}')
             return profit, maturity_date, coupon, coupon_payment_date
+
         else:
             try:
                 full_page = requests.get(url=url, headers=headers)
