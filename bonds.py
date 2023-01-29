@@ -94,14 +94,13 @@ class Bonds:
         difference_nominal = (self.nominal - self.average_price) * self.quantity
         coupon_income = self.calculate_coupon_profit(self.total_payments)
         profit = round(difference_nominal + coupon_income, 2)
-        percent_profitability = self.calculate_percent_profitability(profit)
+        percent_profitability = round(self.calculate_percent_profitability(profit), 2)
         return profit, percent_profitability
 
-    # Отображение доходности бумаги к концу
-    def displaying_the_yield_of_the_paper_by_the_end(self):
-        profit, percent_profitability = self.calculate_all_profitability()
-        print(f"Доход {self.bond} составит {profit} ₽  ({percent_profitability} %) к дате погашения")
-        return profit, percent_profitability
+    def get_profitability_to_end_for_display(self):
+        profit = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[0])
+        percent_profitability = self.calculate_all_profitability()[1]
+        return f"{profit} ₽", f"({percent_profitability} %)"
 
     # Расчет доходности к концу
     def calculate_profitability_per_year(self):
@@ -110,13 +109,18 @@ class Bonds:
         # ДОХОД В РУБЛЯХ, ДОХОД В ПРОЦЕНТАХ
         coupon_income = (self.coupon_value * self.quantity) * self.number_of_payments_per_year
         invested = (self.average_price * self.quantity)
+        coupon_income = round(coupon_income, 2)
         profit_percent = round(coupon_income * 100 / invested, 2)
         return coupon_income, profit_percent
 
+    def calculate_profitability_per_year_for_display(self):
+        coupon_income = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_profitability_per_year()[0])
+        profit_percent = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_profitability_per_year()[1])
+        return f"{coupon_income} ₽", profit_percent
+
     # Получение суммарно вложенных средств в бумагу
     def get_summary_price(self):
-        price = float(self.average_price.replace(',', '.').replace(' ', ''))
-        return price * self.quantity
+        return self.average_price * self.quantity
 
     def get_summary_price_for_display(self):
         return SummaryAnalysisBondsOfIndicators.format_number(self.get_summary_price()) + ' ₽'
@@ -138,6 +142,36 @@ class Bonds:
             price = round((bond_from_array[4] * bond_from_array[5]) + bond_from_array[7], 2)
             array_summary_price.append(price)
         return array_summary_price
+
+    def get_profitability_per_quarter(self):
+        if self.number_of_payments_per_year == 4:
+            return self.coupon_value * self.quantity
+        elif self.number_of_payments_per_year == 2:
+            return (self.coupon_value * self.quantity) / 2
+        elif self.number_of_payments_per_year == 12:
+            return (self.coupon_value * self.quantity) * 3
+        else:
+            return 0
+
+    def get_profitability_per_quarter_for_display(self):
+        return SummaryAnalysisBondsOfIndicators.format_number(round(self.get_profitability_per_quarter(), 2)) + ' ₽'
+
+    def about_bond_indicators(self):
+        profitability_per_quarter = 0
+        profitability_per_year = 0
+
+        db = DataBaseManager()
+        # data_bond = db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
+
+        profitability_per_year = self.calculate_profitability_per_year()
+        return
+
+    @staticmethod
+    def get_nominal_value_difference(ticker):
+        db = DataBaseManager()
+        data_bond = db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
+        delta_nominal = (data_bond[3] * data_bond[5]) - (data_bond[4] * data_bond[5])
+        return SummaryAnalysisBondsOfIndicators.format_number(round(delta_nominal, 2)) + ' ₽'
 
 
 class SummaryAnalysisBondsOfIndicators:
@@ -171,7 +205,7 @@ class SummaryAnalysisBondsOfIndicators:
 
     # Получение данных конкретной облигаций
     def get_bond_info(self):
-        return self.return_saved_bonds_for_display()
+        return self.return_saved_bonds()
 
     # Годовая доходность
     def return_profitability_per_year(self):
@@ -229,6 +263,7 @@ class SummaryAnalysisBondsOfIndicators:
             array_summary_price.append(price)
         return array_summary_price
 
+    # Суммарно вложено (для отображения)
     def return_summary_price_for_display(self):
         array_summary_price = self.return_summary_price()
         format_array_summary_price = []
@@ -316,24 +351,3 @@ class RequestProcessingInDataBase:
 class BondsController:
     def __init__(self):
         pass
-
-
-bond = SummaryAnalysisBondsOfIndicators()
-
-calendar_array = []
-calendar_dict = {}
-
-array_hidden_data = []
-for item in bond.return_saved_bonds_for_display():
-    array_hidden_data.append(parser.InfoBond(item[1]).get_ingo())
-
-for i in range(len(array_hidden_data)):
-    calendar_dict['date'] = array_hidden_data[i][3][1]
-    calendar_dict['name'] = bond.return_saved_bonds_for_display()[i][2]
-    calendar_dict['coupon'] = round(float(
-        bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) * bond.return_saved_bonds_for_display()[i][5], 2)
-
-    calendar_array.append(calendar_dict)
-    calendar_dict = {}
-
-print(array_hidden_data)
