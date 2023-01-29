@@ -194,6 +194,7 @@ def about_bond(ticker):
     # Получение данных с MOEX
     array_info_about_release = parser.InfoBond(ticker).get_ingo()
 
+    # Экземпляр класса для работы с одной облигацией
     bond = bonds.Bonds(found_bond)
 
     # Суммарно вложено в бумагу
@@ -209,7 +210,11 @@ def about_bond(ticker):
                            coupon_amount=bond_info.format_number(float(array_info_about_release[2][1])) + ' ₽',
                            couon_payment_date=array_info_about_release[3][1],
                            summary_price=total_invested,
-                           share_in_the_portfolio=share_in_the_portfolio)
+                           share_in_the_portfolio=share_in_the_portfolio,
+                           get_profitability_per_quarter=bond.get_profitability_per_quarter_for_display(),
+                           get_nominal_deffence=bond.get_nominal_value_difference(ticker),
+                           get_profitability_per_year=bond.calculate_profitability_per_year_for_display(),
+                           get_profitability_to_end=bond.get_profitability_to_end_for_display())
 
 
 @app.errorhandler(404)
