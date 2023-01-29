@@ -1,11 +1,21 @@
 # -*- coding: UTF-8 -*-
+"""
+    Finanzfluss - Finance Flow App
+    Приложение позволяет управлять денежными потоками, рассчитывать доход от активов,
+    а также анализировать транзакции
+    Copyright (C) 2023 by Berliner187
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+"""
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager
 import bonds
 from bonds import COLUMNS_TABLE_BONDS
 from bonds import RequestProcessingInDataBase
 from werkzeug.security import generate_password_hash, check_password_hash
-from time import sleep
 import parser
 
 import auth
@@ -19,8 +29,7 @@ app.config['SECRET_KEY'] = 'ev8wvg9dvhsvsklvnsdjvn'
 NAME_APP = 'Finanzfluss'
 
 
-CATEGORIES_WASTES = []
-CATEGORIES_RECEIPTS = []
+CATEGORIES_WASTES, CATEGORIES_RECEIPTS = [], []
 
 """ 
     КАТЕГОРИИ ТРАНЗАКЦИЙ
@@ -104,6 +113,7 @@ def index():
 @app.route('/bonds', methods=['POST', 'GET'])
 def assets():
     if request.method == 'POST':
+        # Получение параметров облигации
         array_result_transmitted_data = []
         columns = COLUMNS_TABLE_BONDS.copy()[1:]
 
@@ -126,25 +136,25 @@ def assets():
     # Скрытые данные
     array_hidden_data = []
     for item in bond.return_saved_bonds_for_display():
+        # bond.format_number()
         array_hidden_data.append(parser.InfoBond(item[1]).get_ingo())
-    print(array_hidden_data)
-    # Данные для календаряF
+
+    # Данные для календаря
     calendar_array = []
     calendar_dict = {}
     try:
         for i in range(len(array_hidden_data)):
             calendar_dict['date'] = array_hidden_data[i][3][1]
             calendar_dict['name'] = bond.return_saved_bonds_for_display()[i][2]
-            calendar_dict['coupon'] = round(float(
-                bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) * bond.return_saved_bonds_for_display()[i][5], 2)
+            calendar_dict['coupon'] = bond.format_number(round(float(
+                bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) * bond.return_saved_bonds_for_display()[i][5], 2)) + ' ₽'
 
             calendar_array.append(calendar_dict)
             calendar_dict = {}
-    except TypeError:
+    except TypeError or IndexError:
         pass
 
-    print(calendar_array)
-    calendar_array.sort(key=lambda dictionary: dictionary['date'])
+    calendar_array.sort(key=lambda dictionary: dictionary['date'][3:5])
 
     return render_template(
         'assets.html',
@@ -166,7 +176,40 @@ def delete_bond(bond_id):
         RequestProcessingInDataBase.delete_record(bond_id)
         return redirect("/bonds")
     except:
-        return "Ошибка при удалении"
+        split_error = "Ошибка при удалении: Не удалось удалить облигацию из базы данных."
+        return render_template('error.html', error_code=split_error[0], error_text=split_error[1])
+
+
+@app.route('/bonds/about/<string:ticker>')
+def about_bond(ticker):
+    bond_info = bonds.SummaryAnalysisBondsOfIndicators()
+    bonds_all = bond_info.get_bond_info()
+
+    # Поиск данных об облигации из БД
+    found_bond = []
+    for search_bond in bonds_all:
+        if search_bond[1] == ticker:
+            found_bond = search_bond
+
+    # Получение данных с MOEX
+    array_info_about_release = parser.InfoBond(ticker).get_ingo()
+
+    bond = bonds.Bonds(found_bond)
+
+    # Суммарно вложено в бумагу
+    total_invested = bond.get_summary_price_for_display()
+    # Доля в портфеле
+    share_in_the_portfolio = bond.get_share_in_portfolio()
+
+    return render_template('about-bond.html',
+                           ticker=ticker,
+                           name=found_bond[2],
+                           nominal=bond_info.format_number(found_bond[3]) + ' ₽',
+                           maturity_date=array_info_about_release[1][1],
+                           coupon_amount=bond_info.format_number(float(array_info_about_release[2][1])) + ' ₽',
+                           couon_payment_date=array_info_about_release[3][1],
+                           summary_price=total_invested,
+                           share_in_the_portfolio=share_in_the_portfolio)
 
 
 @app.errorhandler(404)
@@ -177,4 +220,4 @@ def page_not_found(error):
 
 
 if __name__ == '__main__':
-    app.run(host='192.168.175.236', port=5000, debug=False)
+    app.run(host='192.168.31.204', port=5000, debug=False)
