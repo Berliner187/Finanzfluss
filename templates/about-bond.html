@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="image/png" href="{{ url_for('static', filename='img/icons/moon.png')}}" rel="shortcut icon">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
+    <link type="text/css" href="{{ url_for('static', filename='css/const.css')}}" rel="stylesheet" />
+    <title>Облигации · {{ name }}</title>
+</head>
+<body>
+
+    <nav class="sidebar-container">
+        <h1>Finanzfluss</h1>
+        <div>
+            <a class="underline-style" href="/">Главная</a>
+            <a class="underline-style" href="/transactions">Транзакции</a>
+            <a class="underline-style" href="/assets">Активы</a>
+            <a class="entry" href="/login" class="entry">Войти</a>
+        </div>
+    </nav>
+
+    <div id="content" class="content-container">
+        <div class="about-bond-container">
+            <a href="/bonds" class="back-button">< Назад</a>
+
+            <div class="head-bond-info">
+                <div class="bond-name">
+                    <h2>{{ name }}</h2>
+                    <p class="hitting-text">{{ ticker }}</p>
+                </div>
+
+                <div class="portfolio-indicators">
+                    <div>
+                        <p>Суммарно вложено</p>
+                        <span>{{ summary_price }}</span>
+                    </div>
+                    <div>
+                        <p>Доля в портфеле</p>
+                        <span>{{ share_in_the_portfolio }} %</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <section>
+                <div class="bond-info-container">
+                    <h3>Информация о выпуске</h3>
+                    <div>
+                        <p>Дата погашения</p>
+                        <p>{{ maturity_date }}</p>
+                    </div>
+                    <div>
+                        <p>Дата выплаты купона</p>
+                        <p>{{ couon_payment_date }}</p>
+                    </div>
+                    <div>
+                        <p>Величина купона</p>
+                        <p>{{ coupon_amount }}</p>
+                    </div>
+                    <div>
+                        <p>Номинал</p>
+                        <p>{{ nominal }}</p>
+                    </div>
+                </div>
+
+                <div class="bond-info-container">
+                    <h3>Показатели</h3>
+                    <div>
+                        <p>Накопленный купонный доход</p>
+                        <p>-</p>
+                    </div>
+                    <div>
+                        <p>Разность номинала и цены</p>
+                        <p>-</p>
+                    </div>
+                    <div>
+                        <p>Доходность за месяц</p>
+                        <p>-</p>
+                    </div>
+                    <div>
+                        <p>Доходность за квартал</p>
+                        <p>-</p>
+                    </div>
+                    <div>
+                        <p>Доходность за год</p>
+                        <p>-</p>
+                    </div>
+                    <div>
+                        <p>Доходность к дате погашения</p>
+                        <p>-</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <footer>
+        <h2>by Berliner187</h2>
+        <p>Copyright (C) 2023</p>
+        <p>Эта программа лицензирована по <a target="_blank" href="https://github.com/Berliner187/Finanzfluss/blob/main/LICENSE">GPL v3.0.</a></p>
+    </footer>
+
+</body>
+</html>
