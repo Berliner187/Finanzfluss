@@ -63,6 +63,12 @@ class DataBaseManager:
         db.commit()
         db.close()
 
+    # Выборка строки по условию
+    def select_row_from_table(self, data_base, data_base_table, where, what, condition):
+        cursor = self.get_cursor_db(data_base)
+        cursor.execute(f"""SELECT {where} FROM {data_base_table} WHERE "{what}" = '{condition}'""")
+        return cursor.fetchone()
+
     # Выборка данных по условию
     def select_from_table(self, data_base, table_name, what):
         cursor = self.get_cursor_db(data_base)
