@@ -5,11 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link type="image/png" href="{{ url_for('static', filename='img/icons/moon.png')}}" rel="shortcut icon">
-    <!-- <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" /> -->
     <link rel="stylesheet" href="../static/css/styles.css">
     <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
     <link type="text/css" href="{{ url_for('static', filename='css/const.css')}}" rel="stylesheet" />
-    <title>Finanzfluss - Активы</title>
+    <title>Finanzfluss - Облигации</title>
 </head>
 <body class="bonds-bg">
 
@@ -25,6 +24,7 @@
 
     <div id="content" class="content-container">
         
+        <!-- Карточки слева -->
         <div class="cards-container-left">
             <div class="card-container left-cards purple">
                 <h2>Портфель</h2>
@@ -50,59 +50,60 @@
             </div>
         </div>
 
+        <!-- Карточки справа -->
         <div class="cards-container-right">
             <div class="card-container right-cards gray">
-                <p>Облигации в портфеле</p>
+                <h2>Облигации в портфеле</h2>
 
                 {% for bond in range(bond_array| length) %}
 
-                    <div class="block-pills">
-                        <ol class="pills">
-                            
-                            <li class="under-pills-collapsible">
-                                <div class="bond-in-portfolio">
-                                    <div>
-                                        <p>{{ bond_array[bond][2] }}</p>
-                                        <span>{{ bond_array[bond][5] }} шт. • {{bond_array[bond][4] }} ₽</span>
-                                    </div>
-                                    <div>
-                                        <p>{{ summary_price[bond] }} ₽</p>
-                                        <span>{{ profitability_per_year[0][bond] }} ₽ • {{ profitability_per_year[1][bond] }}%</span>
-                                    </div>
-            
-                                    <div class="delete-button-container">
-                                        <a href="/bonds/delete/{{ bond_array[bond][0] }}">
-                                            <img src="../static/img/icons/close.png" alt="">
-                                        </a>
-                                    </div>
+                <div class="block-pills">
+                    <ol class="pills">
+                        
+                        <li class="under-pills-collapsible">
+                            <div class="bond-in-portfolio">
+                                <div>
+                                    <p>{{ bond_array[bond][2] }}</p>
+                                    <span>{{ bond_array[bond][5] }} шт. • {{bond_array[bond][4] }} ₽</span>
                                 </div>
-                            </li>
-                                <!-- Вложенный текст -->
-                                <div class="under-pills-content">
-                                    <div>
-                                        <span>Тикер</span>
-                                        <span>{{bond_array[bond][1]}}</span>
-                                    </div>
-                                    <div>
-                                        <span>{{ array_hidden_data[bond][0][0] }}</span>
-                                        <span>{{ array_hidden_data[bond][0][1] }}</span>
-                                    </div>
-                                    <div>
-                                        <span>{{ array_hidden_data[bond][1][0] }}</span>
-                                        <span>{{ array_hidden_data[bond][1][1] }}</span>
-                                    </div>
-                                    <div>
-                                        <span>{{ array_hidden_data[bond][2][0] }}</span>
-                                        <span>{{ array_hidden_data[bond][2][1] }}</span>
-                                    </div>
-                                    <div>
-                                        <span>{{ array_hidden_data[bond][3][0] }}</span>
-                                        <span>{{ array_hidden_data[bond][3][1] }}</span>
-                                    </div>
+                                <div>
+                                    <p>{{ summary_price[bond] }} ₽</p>
+                                    <span>{{ profitability_per_year[0][bond] }} ₽ • {{ profitability_per_year[1][bond] }}%</span>
                                 </div>
-                        </ol>
-                    </div>
-                    <hr>
+                                <div class="delete-button-container">
+                                    <a href="/bonds/delete/{{ bond_array[bond][0] }}">
+                                        <img src="../static/img/icons/close.png" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                            <!-- Вложенный текст -->
+                            <div class="under-pills-content">
+                                <div>
+                                    <span>Тикер</span>
+                                    <span>{{ bond_array[bond][1] }}</span>
+                                </div>
+                                <div>
+                                    <span>{{ array_hidden_data[bond][0][0] }}</span>
+                                    <span>{{ array_hidden_data[bond][0][1] }}</span>
+                                </div>
+                                <div>
+                                    <span>{{ array_hidden_data[bond][1][0] }}</span>
+                                    <span>{{ array_hidden_data[bond][1][1] }}</span>
+                                </div>
+                                <div>
+                                    <span>{{ array_hidden_data[bond][2][0] }}</span>
+                                    <span>{{ array_hidden_data[bond][2][1] }}</span>
+                                </div>
+                                <div>
+                                    <span>{{ array_hidden_data[bond][3][0] }}</span>
+                                    <span>{{ array_hidden_data[bond][3][1] }}</span>
+                                </div>
+                                <a href="/bonds/about/{{ bond_array[bond][1] }}" class="entry">Подробнее</a>
+                            </div>
+                    </ol>
+                </div>
+                <hr>
                 {% endfor %}
                 <button class="entry" id="btn_add_new_bond" onclick="displayContainer()">Добавить новую</button>
             </div>
@@ -129,7 +130,13 @@
                 <input type="button" value="Отмена" onclick="displayContainer()"></input>
             </div>
         </form>
-    </div>
+    </section>
+
+    <footer>
+        <h2>by Berliner187</h2>
+        <p>Copyright (C) 2023</p>
+        <p>Эта программа лицензирована по <a target="_blank" href="https://github.com/Berliner187/Finanzfluss/blob/main/LICENSE">GPL v3.0.</a></p>
+    </footer>
 
     <!-- Скрипт открывает скрытый контент PILLS по клику -->
     <script>
