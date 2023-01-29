@@ -74,7 +74,7 @@
                     </div>
                     <div>
                         <p>Разность номинала и цены</p>
-                        <p>-</p>
+                        <p>{{ get_nominal_deffence }}</p>
                     </div>
                     <div>
                         <p>Доходность за месяц</p>
@@ -82,15 +82,15 @@
                     </div>
                     <div>
                         <p>Доходность за квартал</p>
-                        <p>-</p>
+                        <p>{{ get_profitability_per_quarter }}</p>
                     </div>
                     <div>
                         <p>Доходность за год</p>
-                        <p>-</p>
+                        <p>{{ get_profitability_per_year[0] }} ({{ get_profitability_per_year[1] }} %)</p>
                     </div>
                     <div>
                         <p>Доходность к дате погашения</p>
-                        <p>-</p>
+                        <p>{{ get_profitability_to_end[0] }} {{ get_profitability_to_end[1] }}</p>
                     </div>
                 </div>
             </section>
