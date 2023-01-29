@@ -3,6 +3,7 @@
     Модуль расчета облигаций
 """
 from db_manager import DataBaseManager
+import parser
 # UNIQUE ON CONFLICT IGNORE
 
 BONDS_DATA_BASE = 'bonds.db'
@@ -78,28 +79,31 @@ class Bonds:
     def date(self):
         return
 
+    # Расчет купонного дохода
     def calculate_coupon_profit(self, quantity_payments):
-        # Расчет купонного дохода
         coupon_income = (self.coupon_value * self.quantity) * quantity_payments
         return coupon_income
 
+    # Доходность в процентах
     def calculate_percent_profitability(self, profit):
         # Расчет доходности в процентах
         return round(profit * 100 / (self.average_price * self.quantity), 2)
 
+    # Расчет общего дохода к дате погашения
     def calculate_all_profitability(self):
-        # Расчет общего дохода к дате погашения
         difference_nominal = (self.nominal - self.average_price) * self.quantity
         coupon_income = self.calculate_coupon_profit(self.total_payments)
         profit = round(difference_nominal + coupon_income, 2)
         percent_profitability = self.calculate_percent_profitability(profit)
         return profit, percent_profitability
 
+    # Отображение доходности бумаги к концу
     def displaying_the_yield_of_the_paper_by_the_end(self):
         profit, percent_profitability = self.calculate_all_profitability()
         print(f"Доход {self.bond} составит {profit} ₽  ({percent_profitability} %) к дате погашения")
         return profit, percent_profitability
 
+    # Расчет доходности к концу
     def calculate_profitability_per_year(self):
         # !!! ДУБЛЕР !!!
         # Расчет годового дохода
@@ -109,7 +113,22 @@ class Bonds:
         profit_percent = round(coupon_income * 100 / invested, 2)
         return coupon_income, profit_percent
 
-    # Суммарно вложено
+    # Получение суммарно вложенных средств в бумагу
+    def get_summary_price(self):
+        price = float(self.average_price.replace(',', '.').replace(' ', ''))
+        return price * self.quantity
+
+    def get_summary_price_for_display(self):
+        return SummaryAnalysisBondsOfIndicators.format_number(self.get_summary_price()) + ' ₽'
+
+    # Получение доли бумаги в портфеле
+    def get_share_in_portfolio(self):
+        bond_instance = SummaryAnalysisBondsOfIndicators()
+        summary_invested_array = bond_instance.return_summary_price()
+        summary_invested = sum(summary_invested_array)
+        return round(self.get_summary_price() * 100 / summary_invested, 2)
+
+    # Суммарно вложено (первоначальная стоимость в портфеле)
     @staticmethod
     def calculate_summary_price():
         # !!! ДУБЛЕР !!!
@@ -139,6 +158,7 @@ class SummaryAnalysisBondsOfIndicators:
             array_saved_bonds.append(list(item))
         return array_saved_bonds
 
+    # Отображение сохраненных облигаций
     def return_saved_bonds_for_display(self):
         array_saved_bonds = self.return_saved_bonds()
         format_array_saved_bonds = []
@@ -148,6 +168,10 @@ class SummaryAnalysisBondsOfIndicators:
             array_saved_bonds[i][7] = self.format_number(array_saved_bonds[i][7])
             format_array_saved_bonds.append(array_saved_bonds[i])
         return array_saved_bonds
+
+    # Получение данных конкретной облигаций
+    def get_bond_info(self):
+        return self.return_saved_bonds_for_display()
 
     # Годовая доходность
     def return_profitability_per_year(self):
@@ -194,7 +218,7 @@ class SummaryAnalysisBondsOfIndicators:
             profit_percent = self.format_number(profit_percent)
             return f'{summary_profit} ₽ • {profit_percent} % — за год'
         except ZeroDivisionError:
-            return 'Пусто'
+            return '-'
 
     # Суммарно вложено
     def return_summary_price(self):
@@ -224,8 +248,8 @@ class SummaryAnalysisBondsOfIndicators:
     @staticmethod
     def calculate_all_profit():
         array_profit, array_percent_profit = [], []
-        for bond in data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, "*"):
-            calculate_profit = Bonds(bond)
+        for bond_data in data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, "*"):
+            calculate_profit = Bonds(bond_data)
             profit, percent_profit = calculate_profit.calculate_all_profitability()
             array_profit.append(profit)
             array_percent_profit.append(percent_profit)
@@ -234,8 +258,8 @@ class SummaryAnalysisBondsOfIndicators:
     def calculation_of_all_references_to_the_end(self):
         # Расчет доходности в рублях
         summary_profit = 0
-        for bond in data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, "*"):
-            calculate_profit = Bonds(bond)
+        for bond_data in data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, "*"):
+            calculate_profit = Bonds(bond_data)
             profit, percent_profit = calculate_profit.calculate_all_profitability()
             summary_profit += profit
         summary_profit = round(summary_profit, 2)
@@ -252,14 +276,14 @@ class SummaryAnalysisBondsOfIndicators:
             profit_percent = self.format_number(profit_percent)
             return f'{summary_profit} ₽ • {profit_percent} % — к концу'
         except ZeroDivisionError:
-            return 'Пусто'
+            return '-'
 
     # Расчет стоимости бумаг в портфеле
     def calculate_the_total_return_of_the_portfolio(self):
         average_prices_array, quantities_array, aci_total_array = [], [], []
         summary = 0
 
-        # Добавление необходимых параметров в массив для расчета
+        # Добавление необходимых параметров в массив для расчета вложенных средств
         def add_parameter_in_array(column_name, array):
             for elem in data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, column_name):
                 array.append(float("".join(map(str, elem))))
@@ -272,8 +296,8 @@ class SummaryAnalysisBondsOfIndicators:
         add_parameter_in_array('aci', aci_total_array)
 
         # Расчет вложенных средств
-        for element in range(len(average_prices_array)):
-            summary += (average_prices_array[element] * quantities_array[element]) + aci_total_array[element]
+        for price, quantity, aci in zip(average_prices_array, quantities_array, aci_total_array):
+            summary += (price * quantity) + aci
 
         summary = round(summary, 2)
         return self.format_number(summary)
@@ -287,3 +311,29 @@ class RequestProcessingInDataBase:
     @staticmethod
     def delete_record(criteria):
         data_base.delete_record(BONDS_DATA_BASE, criteria)
+
+
+class BondsController:
+    def __init__(self):
+        pass
+
+
+bond = SummaryAnalysisBondsOfIndicators()
+
+calendar_array = []
+calendar_dict = {}
+
+array_hidden_data = []
+for item in bond.return_saved_bonds_for_display():
+    array_hidden_data.append(parser.InfoBond(item[1]).get_ingo())
+
+for i in range(len(array_hidden_data)):
+    calendar_dict['date'] = array_hidden_data[i][3][1]
+    calendar_dict['name'] = bond.return_saved_bonds_for_display()[i][2]
+    calendar_dict['coupon'] = round(float(
+        bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) * bond.return_saved_bonds_for_display()[i][5], 2)
+
+    calendar_array.append(calendar_dict)
+    calendar_dict = {}
+
+print(array_hidden_data)
