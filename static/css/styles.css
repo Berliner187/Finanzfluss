@@ -185,7 +185,7 @@ section {
 }
 
 hr {
-    width: 90%;
+    width: 85%;
     margin: 10px;
     margin: 0 auto;
     border-radius: 70em;
@@ -752,7 +752,7 @@ header {
     justify-content: space-between;
 }
 .bond-info-container div p {
-    font-size: 22px;
+    font-size: 20px;
 }
 
 
