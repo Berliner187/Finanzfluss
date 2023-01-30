@@ -64,6 +64,14 @@
                         <p>Номинал</p>
                         <p>{{ nominal }}</p>
                     </div>
+                    <div>
+                        <p>Выплат в год</p>
+                        <p>{{ payments_per_year }}</p>
+                    </div>
+                    <div>
+                        <p>Осталось выплат</p>
+                        <p>{{ total_payments }}</p>
+                    </div>
                 </div>
 
                 <div class="bond-info-container">
@@ -77,20 +85,24 @@
                         <p>{{ get_nominal_deffence }}</p>
                     </div>
                     <div>
-                        <p>Доходность за месяц</p>
-                        <p>-</p>
+                        <p>Доход за месяц</p>
+                        <p>{{ get_profitability_per_month }}</p>
                     </div>
                     <div>
-                        <p>Доходность за квартал</p>
+                        <p>Доход за квартал</p>
                         <p>{{ get_profitability_per_quarter }}</p>
                     </div>
                     <div>
                         <p>Доходность за год</p>
-                        <p>{{ get_profitability_per_year[0] }} ({{ get_profitability_per_year[1] }} %)</p>
+                        <p>{{ get_profitability_per_year[0] }} • ({{ get_profitability_per_year[1] }} %)</p>
                     </div>
                     <div>
                         <p>Доходность к дате погашения</p>
-                        <p>{{ get_profitability_to_end[0] }} {{ get_profitability_to_end[1] }}</p>
+                        <p>{{ get_profitability_to_end[0] }} • {{ get_profitability_to_end[1] }}</p>
+                    </div>
+                    <div>
+                        <p>Годовой налог составит</p>
+                        <p>{{ get_tax_per_year }}</p>
                     </div>
                 </div>
             </section>
