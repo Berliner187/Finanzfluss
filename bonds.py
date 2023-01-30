@@ -99,7 +99,7 @@ class Bonds:
 
     def get_profitability_to_end_for_display(self):
         profit = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[0])
-        percent_profitability = self.calculate_all_profitability()[1]
+        percent_profitability = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[1])
         return f"{profit} ₽", f"({percent_profitability} %)"
 
     # Расчет доходности к концу
@@ -120,7 +120,7 @@ class Bonds:
 
     # Получение суммарно вложенных средств в бумагу
     def get_summary_price(self):
-        return self.average_price * self.quantity
+        return round(self.average_price * self.quantity, 2)
 
     def get_summary_price_for_display(self):
         return SummaryAnalysisBondsOfIndicators.format_number(self.get_summary_price()) + ' ₽'
@@ -142,6 +142,22 @@ class Bonds:
             price = round((bond_from_array[4] * bond_from_array[5]) + bond_from_array[7], 2)
             array_summary_price.append(price)
         return array_summary_price
+
+    def get_profitability_per_month(self):
+        profit = self.coupon_value * self.quantity  # Годовой доход
+        if self.number_of_payments_per_year == 2:
+            return round(profit * 2 / 12, 2)
+        elif self.number_of_payments_per_year == 4:
+            return round(profit * 4 / 12, 2)
+        elif self.number_of_payments_per_year == 12:
+            return round(profit, 2)
+        else:
+            return 0
+
+    def get_profitability_per_month_for_display(self):
+        if self.number_of_payments_per_year != 12: tilda = '~'
+        else: tilda = ''
+        return f'{tilda}{SummaryAnalysisBondsOfIndicators.format_number(round(self.get_profitability_per_month(), 2))} ₽'
 
     def get_profitability_per_quarter(self):
         if self.number_of_payments_per_year == 4:
@@ -172,6 +188,19 @@ class Bonds:
         data_bond = db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
         delta_nominal = (data_bond[3] * data_bond[5]) - (data_bond[4] * data_bond[5])
         return SummaryAnalysisBondsOfIndicators.format_number(round(delta_nominal, 2)) + ' ₽'
+
+    def get_payments_per_year_for_display(self):
+        return self.number_of_payments_per_year
+
+    def get_total_payments_for_display(self):
+        return self.total_payments
+
+    def get_tax_per_year(self):
+        profit = self.calculate_profitability_per_year()[0]
+        return round(profit * 0.13, 2)
+
+    def get_tax_per_year_for_display(self):
+        return f'{SummaryAnalysisBondsOfIndicators.format_number(self.get_tax_per_year())} ₽'
 
 
 class SummaryAnalysisBondsOfIndicators:
