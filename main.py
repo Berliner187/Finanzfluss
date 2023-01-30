@@ -136,8 +136,10 @@ def assets():
     # Скрытые данные
     array_hidden_data = []
     for item in bond.return_saved_bonds_for_display():
-        # bond.format_number()
-        array_hidden_data.append(parser.InfoBond(item[1]).get_ingo())
+        data = parser.InfoBond(item[1]).get_ingo()
+        # Костыль
+        data[2][1] = f'{bond.format_number(float(data[2][1]))} ₽'
+        array_hidden_data.append(data)
 
     # Данные для календаря
     calendar_array = []
@@ -146,9 +148,7 @@ def assets():
         for i in range(len(array_hidden_data)):
             calendar_dict['date'] = array_hidden_data[i][3][1]
             calendar_dict['name'] = bond.return_saved_bonds_for_display()[i][2]
-            calendar_dict['coupon'] = bond.format_number(round(float(
-                bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) * bond.return_saved_bonds_for_display()[i][5], 2)) + ' ₽'
-
+            calendar_dict['coupon'] = bond.format_number(round(float(bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) * bond.return_saved_bonds_for_display()[i][5], 2)) + ' ₽'
             calendar_array.append(calendar_dict)
             calendar_dict = {}
     except TypeError or IndexError:
@@ -209,12 +209,16 @@ def about_bond(ticker):
                            maturity_date=array_info_about_release[1][1],
                            coupon_amount=bond_info.format_number(float(array_info_about_release[2][1])) + ' ₽',
                            couon_payment_date=array_info_about_release[3][1],
+                           payments_per_year=bond.get_payments_per_year_for_display(),
+                           total_payments=bond.get_total_payments_for_display(),
                            summary_price=total_invested,
                            share_in_the_portfolio=share_in_the_portfolio,
+                           get_profitability_per_month=bond.get_profitability_per_month_for_display(),
                            get_profitability_per_quarter=bond.get_profitability_per_quarter_for_display(),
                            get_nominal_deffence=bond.get_nominal_value_difference(ticker),
                            get_profitability_per_year=bond.calculate_profitability_per_year_for_display(),
-                           get_profitability_to_end=bond.get_profitability_to_end_for_display())
+                           get_profitability_to_end=bond.get_profitability_to_end_for_display(),
+                           get_tax_per_year=bond.get_tax_per_year_for_display())
 
 
 @app.errorhandler(404)
