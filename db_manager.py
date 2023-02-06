@@ -1,4 +1,15 @@
 # -*- coding: UTF-8 -*-
+"""
+    Finanzfluss - Finance Flow App
+    Приложение позволяет управлять денежными потоками, рассчитывать доход от активов,
+    а также анализировать транзакции
+    Copyright (C) 2023 by Berliner187
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+"""
 from datetime import datetime
 import sqlite3
 
