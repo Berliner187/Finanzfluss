@@ -38,6 +38,7 @@
             <div class="card-container left-cards violet">
                 <h2>Календарь</h2>
                 {% for data in calendar_array %}
+                    <hr>
                     <div class="calendar">
                         <p>{{ data.date }}</p>
                         <div>
@@ -45,7 +46,6 @@
                             <span>{{ data.coupon }}</span>
                         </div>
                     </div>
-                    <hr>
                 {% endfor %}
             </div>
         </div>

@@ -138,6 +138,34 @@ section {
     transition: width 0.5s;
 }
 
+.about-program-container {
+    backdrop-filter: blur(16px);
+    width: 1500px;
+    padding-left: 100px;
+    padding-right: 100px;
+    padding-bottom: 50px;
+    color: #e7e7e7;
+}
+.about-program-container h3 {
+    text-align: center;
+    margin: 0;
+    font-size: 32px;
+}
+.about-program-container p {
+    font-size: 20px;
+    text-indent: 40px;
+}
+.about-program-container p a {
+    padding: 12px;
+    background-color: rgb(34, 34, 34, .6);
+    border-radius: 30px;
+    transition: .2s;
+}
+.about-program-container p a:hover {
+    background-color: rgba(219, 219, 219, 1);
+    color: #232323;
+}
+
 .content-container, .card-container {
     margin: 0 auto;
     width: 1700px;
@@ -185,7 +213,7 @@ section {
 }
 
 hr {
-    width: 85%;
+    width: 90%;
     margin: 10px;
     margin: 0 auto;
     border-radius: 70em;
@@ -394,7 +422,6 @@ hr {
 
 
 .card-container {
-    border: 2px solid rgba(255, 255, 255, 0.3);
     flex-direction: column;
     text-align: center;
     border-radius: 40px;
@@ -443,15 +470,15 @@ hr {
 /* БЛЮР БЛОКОВ */
 .login-container, .glass-container, 
 .sidebar-container, .card-container,
-.add-new-bond-container, .about-bond-container,
+.add-new-bond-container, .about-bond-container, .about-program-container
 footer {
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(14px);
 }
 
 
 /* Для логина и гласс-контейнера */
 .login-container, .glass-container,
-.about-bond-container {
+.about-bond-container, .about-program-container {
     background-color: rgb(34, 34, 34, .3);
     border-radius: 40px;
     margin: 0 auto;
@@ -694,7 +721,6 @@ header {
 }
 .portfolio-indicators div {
     text-align: center;
-    background-color: rgb(255, 255, 255, .15);
     padding: 20px;
     border-radius: 30px;
     box-shadow: 0 0 15px 4px rgba(22,22,22,0.1);
@@ -705,6 +731,10 @@ header {
 }
 .portfolio-indicators div span {
     font-size: 36px;
+}
+
+.portfolio-indicators div, .bond-info-container {
+    background-color: rgb(255, 255, 255, .15);
 }
 
 .about-bond-container h2 {
@@ -729,7 +759,7 @@ header {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    margin-bottom: 40px;
+    flex-wrap: wrap;
 }
 .about-bond-container section div {
     border-radius: 30px;
@@ -737,9 +767,9 @@ header {
     height: fit-content;
 }
 .bond-info-container {
+    margin-bottom: 30px;
     padding: 20px;
     box-shadow: 0 0 15px 4px rgba(22,22,22,0.1);
-    background-color: rgba(255, 255, 255, .2);
 }
 .bond-info-container h3 {
     text-align: center;

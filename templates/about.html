@@ -1,12 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzfluss</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends 'main.html' %}
+
+{% block main %} {% endblock %}
+
+{% block navigation %}
+<a class="underline-style" href="/">Лицензия</a>
+<a class="underline-style" href="/bonds">Облигации</a>
+{% endblock %}
+
+{% block content %}
+<div class="about-program-container">
+    <h2>О сервисе {{ name_app }}</h2>
+    <a target="_blank" href="/licence" class="entry">Лицензия</a>
+</div>
+{% endblock %} 
