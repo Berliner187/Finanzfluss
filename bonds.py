@@ -1,7 +1,18 @@
 # -*- coding: UTF-8 -*-
 """
     Модуль расчета облигаций
+
+    Finanzfluss - Finance Flow App
+    Приложение позволяет управлять денежными потоками, рассчитывать доход от активов,
+    а также анализировать транзакции
+    Copyright (C) 2023 by Berliner187
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 """
+
 from db_manager import DataBaseManager
 import parser
 # UNIQUE ON CONFLICT IGNORE
@@ -201,6 +212,15 @@ class Bonds:
 
     def get_tax_per_year_for_display(self):
         return f'{SummaryAnalysisBondsOfIndicators.format_number(self.get_tax_per_year())} ₽'
+
+    def nominal_profitability(self):
+        return round((self.coupon_value * 100 / self.nominal) * self.number_of_payments_per_year, 2)
+
+    def nominal_profitability_for_display(self):
+        return f'{SummaryAnalysisBondsOfIndicators.format_number(self.nominal_profitability())} %'
+
+    def price_averaging(self):
+        return
 
 
 class SummaryAnalysisBondsOfIndicators:
