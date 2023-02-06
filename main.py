@@ -20,20 +20,19 @@ import parser
 
 import auth
 
-
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SECRET_KEY'] = 'ev8wvg9dvhsvsklvnsdjvn'
 
-
 NAME_APP = 'Finanzfluss'
-
 
 CATEGORIES_WASTES, CATEGORIES_RECEIPTS = [], []
 
 """ 
     КАТЕГОРИИ ТРАНЗАКЦИЙ
 """
+
+
 # WASTES = 'files/wastes.dat'
 # RECEIPTS = 'files/receipts.dat'
 #
@@ -148,7 +147,9 @@ def assets():
         for i in range(len(array_hidden_data)):
             calendar_dict['date'] = array_hidden_data[i][3][1]
             calendar_dict['name'] = bond.return_saved_bonds_for_display()[i][2]
-            calendar_dict['coupon'] = bond.format_number(round(float(bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) * bond.return_saved_bonds_for_display()[i][5], 2)) + ' ₽'
+            calendar_dict['coupon'] = bond.format_number(round(
+                float(bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) *
+                bond.return_saved_bonds_for_display()[i][5], 2)) + ' ₽'
             calendar_array.append(calendar_dict)
             calendar_dict = {}
     except TypeError or IndexError:
@@ -211,6 +212,7 @@ def about_bond(ticker):
                            couon_payment_date=array_info_about_release[3][1],
                            payments_per_year=bond.get_payments_per_year_for_display(),
                            total_payments=bond.get_total_payments_for_display(),
+                           nominal_profitability=bond.nominal_profitability_for_display(),
                            summary_price=total_invested,
                            share_in_the_portfolio=share_in_the_portfolio,
                            get_profitability_per_month=bond.get_profitability_per_month_for_display(),
@@ -219,6 +221,20 @@ def about_bond(ticker):
                            get_profitability_per_year=bond.calculate_profitability_per_year_for_display(),
                            get_profitability_to_end=bond.get_profitability_to_end_for_display(),
                            get_tax_per_year=bond.get_tax_per_year_for_display())
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html',
+                           name_app=NAME_APP,
+                           title='О сервисе',
+                           header_link='Войти',
+                           header_redirect='/login')
+
+
+@app.route('/licence')
+def licence():
+    return render_template('licence.html', name_app=NAME_APP, title='Лицензия')
 
 
 @app.errorhandler(404)
