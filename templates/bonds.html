@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="image/png" href="{{ url_for('static', filename='img/icons/moon.png')}}" rel="shortcut icon">
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
+    <link type="text/css" href="{{ url_for('static', filename='css/const.css')}}" rel="stylesheet" />
+    <title>Finanzfluss - Облигации</title>
+</head>
+<body class="bonds-bg">
+
+    <nav class="sidebar-container">
+        <h1>Finanzfluss</h1>
+        <div>
+            <a class="underline-style" href="/">Главная</a>
+            <a class="underline-style" href="/transactions">Транзакции</a>
+            <a class="underline-style" href="/assets">Активы</a>
+            <a class="entry" href="/login" class="entry">Войти</a>
+        </div>
+    </nav>
+
+    <div id="content" class="content-container">
+        
+        <!-- Карточки слева -->
+        <div class="cards-container-left">
+            <div class="card-container left-cards purple">
+                <h2>Портфель</h2>
+                <span id="amount_portfolio">{{ summary_portfolio }} ₽</span>
+            </div>
+            <div class="card-container left-cards green">
+                <h2>Доходность</h2>
+                <span>{{profitability_per_year_by_sem_positions}}</span>
+                <span>{{profit_to_the_end}}</span>
+            </div>
+            <div class="card-container left-cards violet">
+                <h2>Календарь</h2>
+                {% for data in calendar_array %}
+                    <hr>
+                    <div class="calendar">
+                        <p>{{ data.date }}</p>
+                        <div>
+                            <span>{{ data.name }}</span>
+                            <span>{{ data.coupon }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Карточки справа -->
+        <div class="cards-container-right">
+            <div class="card-container right-cards gray">
+                <h2>Облигации в портфеле</h2>
+
+                {% for bond in range(bond_array| length) %}
+
+                <div class="block-pills">
+                    <ol class="pills">
+                        
+                        <li class="under-pills-collapsible">
+                            <div class="bond-in-portfolio">
+                                <div>
+                                    <p>{{ bond_array[bond][2] }}</p>
+                                    <span>{{ bond_array[bond][5] }} шт. • {{bond_array[bond][4] }} ₽</span>
+                                </div>
+                                <div>
+                                    <p>{{ summary_price[bond] }} ₽</p>
+                                    <span>{{ profitability_per_year[0][bond] }} ₽ • {{ profitability_per_year[1][bond] }}%</span>
+                                </div>
+                                <div class="delete-button-container">
+                                    <a href="/assets/bonds/delete/{{ bond_array[bond][0] }}">
+                                        <img src="../static/img/icons/close.png" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                            <!-- Вложенный текст -->
+                            <div class="under-pills-content">
+                                <div>
+                                    <span>Тикер</span>
+                                    <span>{{ bond_array[bond][1] }}</span>
+                                </div>
+                                <div>
+                                    <span>{{ array_hidden_data[bond][0][0] }}</span>
+                                    <span>{{ array_hidden_data[bond][0][1] }}</span>
+                                </div>
+                                <div>
+                                    <span>{{ array_hidden_data[bond][1][0] }}</span>
+                                    <span>{{ array_hidden_data[bond][1][1] }}</span>
+                                </div>
+                                <div>
+                                    <span>{{ array_hidden_data[bond][2][0] }}</span>
+                                    <span>{{ array_hidden_data[bond][2][1] }}</span>
+                                </div>
+                                <div>
+                                    <span>{{ array_hidden_data[bond][3][0] }}</span>
+                                    <span>{{ array_hidden_data[bond][3][1] }}</span>
+                                </div>
+                                <a href="/assets/bonds/about/{{ bond_array[bond][1] }}" class="entry">Подробнее</a>
+                            </div>
+                    </ol>
+                </div>
+                <hr>
+                {% endfor %}
+                <button class="entry" id="btn_add_new_bond" onclick="displayContainer()">Добавить новую</button>
+            </div>
+        </div>
+
+    </div>
+
+    <section class="add-new-bond-container" id="hidden_container">
+        <form method="POST" class="add-new-bond">
+            <div>
+                <input type="text" name="ticker" id="ticker" placeholder="Тикер">
+                <input type="text" name="bond" id="name" placeholder="Название">
+                <input type="number" name="nominal" id="" placeholder="Номинал">
+                <input type="number" step="0.01" name="average_price" id="" placeholder="Цена">
+                <input type="number" name="quantity" id="" placeholder="Кол-во">
+                <input type="number" step="0.01" name="coupon_value" id="" placeholder="Купон">
+                <input type="number" step="0.01" name="aci" id="" placeholder="НКД">
+                <input type="number" name="number_of_payments_per_year" id="" placeholder="Вылат в год">
+                <input type="number" name="total_payments" id="" placeholder="Выплат всего">
+                <input type="text" name="date_of_purchase" id="" placeholder="Дата покупки">
+            </div>
+            <div class="buttons-container">
+                <input type="submit" value="Добавить"></input>
+                <input type="button" value="Отмена" onclick="displayContainer()"></input>
+            </div>
+        </form>
+    </section>
+
+    <footer>
+        <h2>by Berliner187</h2>
+        <p>Copyright (C) 2023</p>
+        <p>Эта программа лицензирована по <a target="_blank" href="https://github.com/Berliner187/Finanzfluss/blob/main/LICENSE">GPL v3.0.</a></p>
+    </footer>
+
+    <!-- Скрипт открывает скрытый контент PILLS по клику -->
+    <script>
+        let coll = document.getElementsByClassName('under-pills-collapsible');
+        for (let i = 0; i < coll.length; i++) {
+            coll[i].addEventListener('click', function() {
+                this.classList.toggle('active');
+                let content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    content.style.opacity = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    content.style.opacity = 1;
+                }
+            })
+        }
+    </script>
+
+    <script>
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+
+        function confirmDeleteBond() {
+            content = document.getElementById("confirm-delete-bond-container");
+            if (content.style.display == "block") {
+                document.getElementById("confirm-delete-bond-container").style.display = "none";
+            }
+            else {
+                document.getElementById("confirm-delete-bond-container").style.display = "block";
+            }
+        };
+
+        function displayContainer() {
+            window.onload = () => document.querySelector('section').classList.remove('hidden_container');
+            let container = document.getElementById("hidden_container");
+            let content = document.getElementById("content");
+
+            let cnt = 0;
+            if (container.style.display == "block") {
+                container.style.display = "none";
+                container.style.opacity = "0";
+                content.style.opacity = "1";
+                content.style.position = "static";
+            } 
+            else {
+                container.style.display = "block";
+                container.style.opacity = "1";
+                content.style.position = "absolute";
+                content.style.opacity = "0";
+            }
+            window.scrollTo(0, -2000)
+        }
+        
+    </script>
+
+</body>
+</html>
