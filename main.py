@@ -109,7 +109,24 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/bonds', methods=['POST', 'GET'])
+@app.route('/assets')
+def assets_blyat():
+    bond = bonds.SummaryAnalysisBondsOfIndicators()
+
+    return render_template(
+        'assets.html',
+        name_app=NAME_APP,
+        title='Активы',
+        header_link='Войти',
+        header_redirect='/login',
+        amount_in_portfolio=bond.calculate_the_total_return_of_the_portfolio() + ' ₽',
+        profitability_per_year=bond.profitability_per_year_by_sem_positions_for_display(),
+        profitability_total=bond.calculation_of_all_references_to_the_end(),
+        take_profit=0
+    )
+
+
+@app.route('/assets/bonds', methods=['POST', 'GET'])
 def assets():
     if request.method == 'POST':
         # Получение параметров облигации
@@ -127,7 +144,7 @@ def assets():
             cnt += 1
         # Запись облигации в базу данных
         RequestProcessingInDataBase.add_bond(tuple(array_result_transmitted_data))
-        # bond_info = parser.InfoBond(request.form.get('ticker'))
+        # bond_info = parser.ResponseResultMOEX(request.form.get('ticker'))
 
     # Данные для отображения
     bond = bonds.SummaryAnalysisBondsOfIndicators()
@@ -135,9 +152,9 @@ def assets():
     # Скрытые данные
     array_hidden_data = []
     for item in bond.return_saved_bonds_for_display():
-        data = parser.InfoBond(item[1]).get_ingo()
+        data = parser.ResponseResultMOEX(item[1]).get_info()
         # Костыль
-        data[2][1] = f'{bond.format_number(float(data[2][1]))} ₽'
+        data[3][1] = f'{bond.format_number(float(data[3][1]))} ₽'
         array_hidden_data.append(data)
 
     # Данные для календаря
@@ -145,7 +162,7 @@ def assets():
     calendar_dict = {}
     try:
         for i in range(len(array_hidden_data)):
-            calendar_dict['date'] = array_hidden_data[i][3][1]
+            calendar_dict['date'] = array_hidden_data[i][2][1]
             calendar_dict['name'] = bond.return_saved_bonds_for_display()[i][2]
             calendar_dict['coupon'] = bond.format_number(round(
                 float(bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) *
@@ -155,10 +172,12 @@ def assets():
     except TypeError or IndexError:
         pass
 
+    # Костыль
+    calendar_array.sort(key=lambda dictionary: dictionary['date'][0:2])
     calendar_array.sort(key=lambda dictionary: dictionary['date'][3:5])
 
     return render_template(
-        'assets.html',
+        'bonds.html',
         bond_array=bond.return_saved_bonds_for_display(),
         summary_portfolio=bond.calculate_the_total_return_of_the_portfolio(),
         summary_price=bond.return_summary_price_for_display(),
@@ -170,18 +189,18 @@ def assets():
     )
 
 
-@app.route('/bonds/delete/<int:bond_id>')
+@app.route('/assets/bonds/delete/<int:bond_id>')
 def delete_bond(bond_id):
     print('Запущено: delete_bond')
     try:
         RequestProcessingInDataBase.delete_record(bond_id)
-        return redirect("/bonds")
+        return redirect("/assets/bonds")
     except:
         split_error = "Ошибка при удалении: Не удалось удалить облигацию из базы данных."
         return render_template('error.html', error_code=split_error[0], error_text=split_error[1])
 
 
-@app.route('/bonds/about/<string:ticker>')
+@app.route('/assets/bonds/about/<string:ticker>')
 def about_bond(ticker):
     bond_info = bonds.SummaryAnalysisBondsOfIndicators()
     bonds_all = bond_info.get_bond_info()
@@ -192,35 +211,17 @@ def about_bond(ticker):
         if search_bond[1] == ticker:
             found_bond = search_bond
 
-    # Получение данных с MOEX
-    array_info_about_release = parser.InfoBond(ticker).get_ingo()
+    # Экземпляр класса Контроллер, управляет бизнес-моделью и видом
+    info_by_labels = bonds.BondsController()
 
-    # Экземпляр класса для работы с одной облигацией
-    bond = bonds.Bonds(found_bond)
-
-    # Суммарно вложено в бумагу
-    total_invested = bond.get_summary_price_for_display()
-    # Доля в портфеле
-    share_in_the_portfolio = bond_info.format_number(bond.get_share_in_portfolio())
-
-    return render_template('about-bond.html',
-                           ticker=ticker,
-                           name=found_bond[2],
-                           nominal=bond_info.format_number(found_bond[3]) + ' ₽',
-                           maturity_date=array_info_about_release[1][1],
-                           coupon_amount=bond_info.format_number(float(array_info_about_release[2][1])) + ' ₽',
-                           couon_payment_date=array_info_about_release[3][1],
-                           payments_per_year=bond.get_payments_per_year_for_display(),
-                           total_payments=bond.get_total_payments_for_display(),
-                           nominal_profitability=bond.nominal_profitability_for_display(),
-                           summary_price=total_invested,
-                           share_in_the_portfolio=share_in_the_portfolio,
-                           get_profitability_per_month=bond.get_profitability_per_month_for_display(),
-                           get_profitability_per_quarter=bond.get_profitability_per_quarter_for_display(),
-                           get_nominal_deffence=bond.get_nominal_value_difference(ticker),
-                           get_profitability_per_year=bond.calculate_profitability_per_year_for_display(),
-                           get_profitability_to_end=bond.get_profitability_to_end_for_display(),
-                           get_tax_per_year=bond.get_tax_per_year_for_display())
+    return render_template(
+        'about-bond.html',
+        name_app=NAME_APP,
+        title=found_bond[2],
+        header_link='Войти',
+        header_redirect='/login',
+        info_about_bond=info_by_labels.about_bond(ticker)
+    )
 
 
 @app.route('/about')
@@ -245,4 +246,5 @@ def page_not_found(error):
 
 
 if __name__ == '__main__':
+    # app.run(host='192.168.1.9', port=5000, debug=False)
     app.run(host='192.168.31.204', port=5000, debug=False)

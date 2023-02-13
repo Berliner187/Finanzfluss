@@ -12,9 +12,9 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 """
-
+import db_manager
 from db_manager import DataBaseManager
-import parser
+from parser import ResponseResultMOEX
 # UNIQUE ON CONFLICT IGNORE
 
 BONDS_DATA_BASE = 'bonds.db'
@@ -61,9 +61,31 @@ data_base = DataBaseManager()
 data_base.create_table(BONDS_DATA_BASE, BONDS_TABLE)
 
 
+class FormatNumber:
+    """
+        self.number - integer/float number
+        self.type_number - cur=currency, per=percent:
+    """
+    def __init__(self, type_number):
+        self.type_number = type_number
+
+    def get_format(self, number):
+        def format_number(yum):
+            return '{0:,}'.format(yum).replace(',', ' ').replace('.', ',')
+
+        if self.type_number == 'cur':
+            return f'{format_number(number)} ₽'
+
+        elif self.type_number == 'per':
+            return f'{format_number(number)} %'
+
+        else:
+            return format_number(number)
+
+
 class Bonds:
     """
-        TICKER - Тикер облигации
+        TICKER (ISIN) - Тикер облигации
         BOND - Название облигации
         NOMINAL - Номинал облигации
         AVERAGE PRICE - Стоимость на момент покупки (средняя в портфеле)
@@ -108,11 +130,6 @@ class Bonds:
         percent_profitability = round(self.calculate_percent_profitability(profit), 2)
         return profit, percent_profitability
 
-    def get_profitability_to_end_for_display(self):
-        profit = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[0])
-        percent_profitability = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[1])
-        return f"{profit} ₽", f"({percent_profitability} %)"
-
     # Расчет доходности к концу
     def calculate_profitability_per_year(self):
         # !!! ДУБЛЕР !!!
@@ -127,14 +144,19 @@ class Bonds:
     def calculate_profitability_per_year_for_display(self):
         coupon_income = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_profitability_per_year()[0])
         profit_percent = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_profitability_per_year()[1])
-        return f"{coupon_income} ₽", profit_percent
+        return f"{coupon_income} ₽ • ({profit_percent} %)"
 
-    # Получение суммарно вложенных средств в бумагу
+    def get_profitability_to_end_for_display(self):
+        profit = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[0])
+        percent_profitability = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[1])
+        return f"{profit} ₽ • ({percent_profitability} %)"
+
+    # Получение суммарной стоимости бумаг на момент покупки
     def get_summary_price(self):
         return round(self.average_price * self.quantity, 2)
 
     def get_summary_price_for_display(self):
-        return SummaryAnalysisBondsOfIndicators.format_number(self.get_summary_price()) + ' ₽'
+        return FormatNumber('cur').get_format(self.get_summary_price())
 
     # Получение доли бумаги в портфеле
     def get_share_in_portfolio(self):
@@ -180,8 +202,21 @@ class Bonds:
         else:
             return 0
 
+    def get_profitability_per_half_year(self):
+        result = 0
+        if self.number_of_payments_per_year == 4:
+            result = (self.coupon_value * self.quantity) / 2
+        elif self.number_of_payments_per_year == 2:
+            result = self.coupon_value * self.quantity
+        elif self.number_of_payments_per_year == 12:
+            result = (self.coupon_value * self.quantity) * 6
+        return round(result, 2)
+
     def get_profitability_per_quarter_for_display(self):
         return SummaryAnalysisBondsOfIndicators.format_number(round(self.get_profitability_per_quarter(), 2)) + ' ₽'
+
+    def get_profitability_per_half_year_for_display(self):
+        return FormatNumber('cur').get_format(self.get_profitability_per_half_year())
 
     def about_bond_indicators(self):
         profitability_per_quarter = 0
@@ -193,34 +228,22 @@ class Bonds:
         profitability_per_year = self.calculate_profitability_per_year()
         return
 
-    @staticmethod
-    def get_nominal_value_difference(ticker):
-        db = DataBaseManager()
-        data_bond = db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
-        delta_nominal = (data_bond[3] * data_bond[5]) - (data_bond[4] * data_bond[5])
-        return SummaryAnalysisBondsOfIndicators.format_number(round(delta_nominal, 2)) + ' ₽'
+    # Расчет разницы номинала и цены при покупке
+    def get_nominal_value_difference(self):
+        return round((self.nominal * self.quantity) - (self.average_price * self.quantity), 2)
 
-    def get_payments_per_year_for_display(self):
-        return self.number_of_payments_per_year
-
-    def get_total_payments_for_display(self):
-        return self.total_payments
+    def get_nominal_value_difference_for_display(self):
+        return FormatNumber('cur').get_format(self.get_nominal_value_difference())
 
     def get_tax_per_year(self):
         profit = self.calculate_profitability_per_year()[0]
         return round(profit * 0.13, 2)
 
     def get_tax_per_year_for_display(self):
-        return f'{SummaryAnalysisBondsOfIndicators.format_number(self.get_tax_per_year())} ₽'
+        return f'{FormatNumber("cur").get_format(self.get_tax_per_year())} ₽'
 
     def nominal_profitability(self):
         return round((self.coupon_value * 100 / self.nominal) * self.number_of_payments_per_year, 2)
-
-    def nominal_profitability_for_display(self):
-        return f'{SummaryAnalysisBondsOfIndicators.format_number(self.nominal_profitability())} %'
-
-    def price_averaging(self):
-        return
 
 
 class SummaryAnalysisBondsOfIndicators:
@@ -341,19 +364,20 @@ class SummaryAnalysisBondsOfIndicators:
 
     def calculation_of_all_references_to_the_end(self):
         # Расчет доходности в рублях
-        summary_profit = 0
+        summary_profit, difference_nominal = 0, 0
         for bond_data in data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, "*"):
-            calculate_profit = Bonds(bond_data)
-            profit, percent_profit = calculate_profit.calculate_all_profitability()
-            summary_profit += profit
+            bond = Bonds(bond_data)
+            difference_nominal += bond.get_nominal_value_difference()
+            profit, percent_profit = bond.calculate_all_profitability()
+            summary_profit += (profit + difference_nominal)
         summary_profit = round(summary_profit, 2)
         # Всего вложено
         summary_invested = 0
         array_summary_price = self.return_summary_price()
         for price in array_summary_price:
             summary_invested += price
-        # Расчет доходности в процентах
         try:
+            # Расчет доходности в процентах
             profit_percent = round(summary_profit * 100 / summary_invested, 2)
             # Форматирование чисел
             summary_profit = self.format_number(summary_profit)
@@ -398,5 +422,73 @@ class RequestProcessingInDataBase:
 
 
 class BondsController:
-    def __init__(self):
-        pass
+    """
+        Отображение данных во фреймах
+        Является связующем звеном между View и Model
+    """
+
+    @staticmethod
+    def get_bond_info(ticker):
+        # Выгрузка из БД
+        db = DataBaseManager()
+        return db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
+
+    # Страница с детальной информацией о бумаге
+    def about_bond(self, ticker):
+        ## Данные о бумаге из БД
+        bond = self.get_bond_info(ticker)
+
+        ## Вызов классов
+        # Класс Bonds для вычислений
+        calculation = Bonds(bond)
+        # Класс Format для форматирования строк
+        format_currency = FormatNumber('cur')
+        format_percent = FormatNumber('per')
+
+        ### ЛЕЙБЛ: ШАПКА ###
+        label_head = {
+            'ticker': ticker,
+            'name': bond[2],
+            'total_invested': format_currency.get_format(calculation.get_summary_price()),
+            'share_in_portfolio': format_percent.get_format(calculation.get_share_in_portfolio())
+        }
+
+        ### ФРЕЙМ: О ВЫПУСКЕ ###
+        # Получение данных с MOEX: (доходность), дата погашения, даты выплаты купона, величина купона
+        response_from_moex = list(ResponseResultMOEX(ticker).get_info())
+        # Костыль
+        response_from_moex[3][1] = format_currency.get_format(float(response_from_moex[3][1]))
+        about_the_release_data = {
+            'maturity_date': response_from_moex[1],
+            'coupon_payment_date': response_from_moex[2],
+            'coupon_amount': response_from_moex[3],
+            'nominal': ['Номинал', format_currency.get_format(bond[3])],
+            'payments_per_year': ['Выплат в год', bond[8]],
+            'payments_left': ['Осталось выплат', bond[9]],
+            'nominal_profitability':
+                ['Номинальная доходность', format_percent.get_format(calculation.nominal_profitability())],
+            'current_profitability': response_from_moex[0],
+        }
+
+        ### ФРЕЙМ: ПОКАЗАТЕЛИ ###
+        indicators = {
+            'aci': ['Накопленный купонный доход', '-'],
+            'difference_nominal_and_price':
+                ['Разность номинала и цены', calculation.get_nominal_value_difference_for_display()],
+            'monthly_income': ['Доход за месяц', calculation.get_profitability_per_month_for_display()],
+            'income_per_quarter': ['Доход за квартал', calculation.get_profitability_per_quarter_for_display()],
+            'income_per_half_year': ['Доход за полгода', calculation.get_profitability_per_half_year_for_display()],
+            'income_per_year': ['Доходность за год', calculation.calculate_profitability_per_year_for_display()],
+            'profitability_to_maturity_date':
+                ['Доходность к дате погашения', calculation.get_profitability_to_end_for_display()],
+            'tax_per_year':
+                ['Предварительный годовой налог', calculation.get_tax_per_year_for_display()],
+        }
+
+        ### ФРЕЙМ: В ПОРТФЕЛЕ ###
+        in_portfolio = {
+            'average_price': ['Цена', format_currency.get_format(bond[4])],
+            'quantity': ['Количество', f'{bond[5]} шт.']
+        }
+
+        return label_head, about_the_release_data, indicators, in_portfolio
