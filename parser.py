@@ -1,3 +1,14 @@
+"""
+    Finanzfluss - Finance Flow App
+    Приложение позволяет управлять денежными потоками, рассчитывать доход от активов,
+    а также анализировать транзакции
+    Copyright (C) 2023 by Berliner187
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+"""
 from bs4 import BeautifulSoup
 import requests
 import os
@@ -9,11 +20,11 @@ headers = {
 }
 
 
-class InfoBond:
+class ResponseResultMOEX:
     def __init__(self, ticker):
         self.bond = ticker
 
-    def get_ingo(self):
+    def get_info(self):
         file = f'tmp/{self.bond}.dat'
         url = f'https://www.moex.com/ru/issue.aspx?board=TQCB&code={self.bond}'
 
@@ -42,7 +53,7 @@ class InfoBond:
                         coupon_payment_date.append(template_get_content(data[elem]))
                         coupon_payment_date.append(template_get_content(data[elem + 1]))
 
-            return profit, maturity_date, coupon, coupon_payment_date
+            return profit, maturity_date, coupon_payment_date, coupon
 
         else:
             try:
