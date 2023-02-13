@@ -19,7 +19,7 @@ body {
     background-color: black;
     font-family: 'Inter';
     color: #e4e4e4;
-    background: url(https://images.unsplash.com/photo-1626544827763-d516dce335e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1567&q=80);
+    background: url('../img/russkaya-rospis.jpg');
     background-size: 100%;
     background-attachment: fixed;
 }
@@ -36,7 +36,7 @@ h1 {
 h2 {
     text-align: center;
     font-size: 40px;
-    margin-top: 15px;
+    margin-top: 5px;
     margin-bottom: 5px;
 }
 
@@ -81,8 +81,8 @@ section {
 }
 
 .entry, .underline-style {
-    font-size: 24px;
-    padding: 12px;
+    font-size: 22px;
+    padding: 10px;
     margin: 5px;
 }
 /* !!! ПЕРЕИМЕНОВАТЬ !!! */
@@ -179,6 +179,108 @@ section {
 
 }
 
+
+/* АКТИВЫ */
+.container-assets {
+    width: 1800px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+.button-add-section {
+    display: flex;
+    justify-content: center;
+}
+
+.container-assets-right,
+.container-assets-left {
+}
+.container-assets-left {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+}
+.container-assets-left div {
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+.container-assets-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding-bottom: 10px;
+    text-align: center;
+}
+.container-assets-info-left {
+    width: 40%;
+}
+.container-assets-info-right {
+    width: 55%;
+}
+.container-assets-info div section {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 30px;
+    background-color: rgb(34, 34, 34, .4);
+    display: flex;
+    flex-direction: column;
+}
+.container-assets-info div section p {
+    font-size: 22px;
+    margin: 10px;
+}
+.container-assets-info div section h3 {
+    font-size: 30px;
+    margin: 5px;
+}
+
+.links-to-inside {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: rgb(34, 34, 34, .4);
+    vertical-align: middle;
+    text-align: center;
+    transition: .2s;
+}
+.links-to-inside:hover {
+    background-color: rgb(34, 34, 34, 0);
+}
+.links-to-inside section {
+    vertical-align: middle;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    width: 35%;
+}
+
+.links-to-inside section p {
+    font-size: 28px;
+    margin-bottom: 0;
+}
+.links-to-inside section span {
+    font-size: 18px;
+    color: #b3b3b3;
+    padding: 0;
+    margin: 5px;
+}
+.container-assets-right {
+    width: 1000px;
+}
+
+.container-assets-left div div, 
+.links-to-inside {
+    border-radius: 30px;
+}
+.container-assets-left div, 
+.container-assets-right {
+    border-radius: 40px;
+    backdrop-filter: blur(16px);
+    background-color: rgba(200, 200, 200, 0.2);
+}
 
 /* ФРЕЙМ С ОБЛИГАЦИЕЙ */
 .bond-in-portfolio {
@@ -470,7 +572,7 @@ hr {
 /* БЛЮР БЛОКОВ */
 .login-container, .glass-container, 
 .sidebar-container, .card-container,
-.add-new-bond-container, .about-bond-container, .about-program-container
+.add-new-bond-container, .about-bond-container, .about-program-container,
 footer {
     backdrop-filter: blur(14px);
 }
@@ -513,13 +615,13 @@ footer {
 
 /* Фон */
 .bonds-bg {
-    background-image: url(https://images.unsplash.com/photo-1626544827763-d516dce335e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1567&q=80);
+    background-image: url('../img/russkaya-rospis.jpg');
 }
 .bg-login {
-    background-image: url(https://images.unsplash.com/photo-1655720408861-8b04c0724fd9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80);
+    background-image: url('../img/russkaya-rospis.jpg');
 }
 .bg-signup {
-    background-image: url(../img/photo-1655720406770-12ea329b5b61.avif);
+    background-image: url('../img/russkaya-rospis.jpg');
 }
 .bonds-bg, .bg-login,
 .bg-signup {
