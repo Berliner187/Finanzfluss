@@ -19,7 +19,7 @@ body {
     background-color: black;
     font-family: 'Inter';
     color: #e4e4e4;
-    background: url('../img/russkaya-rospis.jpg');
+    background: url('../img/bg-001.png');
     background-size: 100%;
     background-attachment: fixed;
 }
@@ -615,7 +615,7 @@ footer {
 
 /* Фон */
 .bonds-bg {
-    background-image: url('../img/russkaya-rospis.jpg');
+    background-image: url('../img/bg-001.png');
 }
 .bg-login {
     background-image: url('../img/russkaya-rospis.jpg');

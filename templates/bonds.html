@@ -27,26 +27,34 @@
         <!-- Карточки слева -->
         <div class="cards-container-left">
             <div class="card-container left-cards purple">
-                <h2>Портфель</h2>
-                <span id="amount_portfolio">{{ summary_portfolio }} ₽</span>
+                {% for key in bonds_frame[0] %}
+                    <h2>{{ key }}</h2>
+                    <span id="amount_portfolio">{{ bonds_frame[0][key] }}</span>
+                {% endfor %}
             </div>
             <div class="card-container left-cards green">
-                <h2>Доходность</h2>
-                <span>{{profitability_per_year_by_sem_positions}}</span>
-                <span>{{profit_to_the_end}}</span>
+                {% for key in bonds_frame[1] %}
+                    <h2>{{ key }}</h2>
+                    <span>{{ bonds_frame[1][key][0] }}</span>
+                    <span>{{ bonds_frame[1][key][1] }}</span>
+                {% endfor %}
             </div>
             <div class="card-container left-cards violet">
-                <h2>Календарь</h2>
-                {% for data in calendar_array %}
-                    <hr>
-                    <div class="calendar">
-                        <p>{{ data.date }}</p>
-                        <div>
-                            <span>{{ data.name }}</span>
-                            <span>{{ data.coupon }}</span>
-                        </div>
-                    </div>
+                {% for calendar in bonds_frame[2] %}
+                    <h2>{{ calendar }}</h2>
+                    {% set s = bonds_frame[2][calendar]|length %}
+                        <hr>
+                        {% for i in range(s) %}
+                            <div class="calendar">
+                                <p>{{ bonds_frame[2][calendar][i]['date'] }}</p>
+                                <div>
+                                    <span>{{ bonds_frame[2][calendar][i]['name'] }}</span>
+                                    <span>{{ bonds_frame[2][calendar][i]['coupon'] }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
                 {% endfor %}
+
             </div>
         </div>
 

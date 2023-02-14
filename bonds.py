@@ -12,7 +12,6 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 """
-import db_manager
 from db_manager import DataBaseManager
 from parser import ResponseResultMOEX
 # UNIQUE ON CONFLICT IGNORE
@@ -240,7 +239,7 @@ class Bonds:
         return round(profit * 0.13, 2)
 
     def get_tax_per_year_for_display(self):
-        return f'{FormatNumber("cur").get_format(self.get_tax_per_year())} ₽'
+        return FormatNumber("cur").get_format(self.get_tax_per_year())
 
     def nominal_profitability(self):
         return round((self.coupon_value * 100 / self.nominal) * self.number_of_payments_per_year, 2)
@@ -407,8 +406,7 @@ class SummaryAnalysisBondsOfIndicators:
         for price, quantity, aci in zip(average_prices_array, quantities_array, aci_total_array):
             summary += (price * quantity) + aci
 
-        summary = round(summary, 2)
-        return self.format_number(summary)
+        return round(summary, 2)
 
 
 class RequestProcessingInDataBase:
@@ -423,8 +421,8 @@ class RequestProcessingInDataBase:
 
 class BondsController:
     """
-        Отображение данных во фреймах
-        Является связующем звеном между View и Model
+        Отображение данных во фреймах.
+        Является связующим звеном между View и Model
     """
 
     @staticmethod
@@ -432,6 +430,57 @@ class BondsController:
         # Выгрузка из БД
         db = DataBaseManager()
         return db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
+
+    def bonds_frame(self):
+        # Данные для отображения
+        bond = SummaryAnalysisBondsOfIndicators()
+
+        ## Вызов классов
+        # Класс Format для форматирования строк
+        format_currency = FormatNumber('cur')
+
+        # Данные внутри контейнера с облигацией (при раскрытии)
+        array_hidden_data = []
+        for item in bond.return_saved_bonds():
+            data = ResponseResultMOEX(item[1]).get_info()
+            data[3][1] = format_currency.get_format(float(data[3][1]))
+            array_hidden_data.append(data)
+        # Данные для календаря
+        calendar_array = []
+        try:
+            calendar_dict = {}
+            for i in range(len(array_hidden_data)):
+
+                calendar_dict['date'] = array_hidden_data[i][2][1]
+                calendar_dict['name'] = bond.return_saved_bonds()[i][2]
+                calendar_dict['coupon'] = format_currency.get_format(
+                    bond.return_saved_bonds()[i][5] * bond.return_saved_bonds()[i][6])
+
+                calendar_array.append(calendar_dict)
+                calendar_dict = {}
+        except TypeError or IndexError:
+            pass
+
+        # Костыль
+        calendar_array.sort(key=lambda dictionary: dictionary['date'][0:2])
+        calendar_array.sort(key=lambda dictionary: dictionary['date'][3:5])
+
+        label_portfolio = {
+            'Портфель': format_currency.get_format(bond.calculate_the_total_return_of_the_portfolio()),
+        }
+
+        label_profitability = {
+            'Доходность': [
+                bond.profitability_per_year_by_sem_positions_for_display(),
+                bond.calculation_of_all_references_to_the_end()
+            ],
+        }
+
+        label_calendar = {
+            'Календарь': calendar_array
+        }
+
+        return label_portfolio, label_profitability, label_calendar
 
     # Страница с детальной информацией о бумаге
     def about_bond(self, ticker):
@@ -453,7 +502,7 @@ class BondsController:
             'share_in_portfolio': format_percent.get_format(calculation.get_share_in_portfolio())
         }
 
-        ### ФРЕЙМ: О ВЫПУСКЕ ###
+        ### ЛЕЙБЛ: О ВЫПУСКЕ ###
         # Получение данных с MOEX: (доходность), дата погашения, даты выплаты купона, величина купона
         response_from_moex = list(ResponseResultMOEX(ticker).get_info())
         # Костыль
@@ -470,7 +519,7 @@ class BondsController:
             'current_profitability': response_from_moex[0],
         }
 
-        ### ФРЕЙМ: ПОКАЗАТЕЛИ ###
+        ### ЛЕЙБЛ: ПОКАЗАТЕЛИ ###
         indicators = {
             'aci': ['Накопленный купонный доход', '-'],
             'difference_nominal_and_price':
@@ -485,7 +534,7 @@ class BondsController:
                 ['Предварительный годовой налог', calculation.get_tax_per_year_for_display()],
         }
 
-        ### ФРЕЙМ: В ПОРТФЕЛЕ ###
+        ### ЛЕЙБЛ: В ПОРТФЕЛЕ ###
         in_portfolio = {
             'average_price': ['Цена', format_currency.get_format(bond[4])],
             'quantity': ['Количество', f'{bond[5]} шт.']

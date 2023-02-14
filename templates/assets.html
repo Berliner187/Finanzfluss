@@ -61,12 +61,16 @@
 
                 <div class="container-assets-info-left">
                     <section>
-                        <h2>Портфель</h2>
-                        <h3>{{ amount_in_portfolio }}</h3>
+                        {% for key in bonds_assets[0] %}
+                            <h2>{{ key }}</h2>
+                            <h3>{{ bonds_assets[0][key] }}</h3>
+                        {% endfor %}
                         <hr>
-                        <h2>Доходность</h2>
-                        <p>{{ profitability_per_year }}</p>
-                        <p>{{ profitability_total }}</p>
+                        {% for key in bonds_assets[1] %}
+                            <h2>{{ key }}</h2>
+                            <p>{{ bonds_assets[1][key][0] }}</p>
+                            <p>{{ bonds_assets[1][key][1] }}</p>
+                        {% endfor %}
                         <hr>
                         <h2>Доход</h2>
                         <p>{{ take_profit }}</p>

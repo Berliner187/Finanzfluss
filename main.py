@@ -112,6 +112,7 @@ def index():
 @app.route('/assets')
 def assets_blyat():
     bond = bonds.SummaryAnalysisBondsOfIndicators()
+    bonds_controller = bonds.BondsController()
 
     return render_template(
         'assets.html',
@@ -119,7 +120,8 @@ def assets_blyat():
         title='Активы',
         header_link='Войти',
         header_redirect='/login',
-        amount_in_portfolio=bond.calculate_the_total_return_of_the_portfolio() + ' ₽',
+        bonds_assets=bonds_controller.bonds_frame(),
+        amount_in_portfolio=bond.calculate_the_total_return_of_the_portfolio(),
         profitability_per_year=bond.profitability_per_year_by_sem_positions_for_display(),
         profitability_total=bond.calculation_of_all_references_to_the_end(),
         take_profit=0
@@ -132,7 +134,6 @@ def assets():
         # Получение параметров облигации
         array_result_transmitted_data = []
         columns = COLUMNS_TABLE_BONDS.copy()[1:]
-
         cnt = 0
         for column in columns:
             if cnt in [3, 5, 6]:
@@ -142,12 +143,12 @@ def assets():
             else:
                 array_result_transmitted_data.append(str(request.form.get(column)))
             cnt += 1
-        # Запись облигации в базу данных
+        # Запись данных об облигации в базу данных
         RequestProcessingInDataBase.add_bond(tuple(array_result_transmitted_data))
-        # bond_info = parser.ResponseResultMOEX(request.form.get('ticker'))
 
     # Данные для отображения
     bond = bonds.SummaryAnalysisBondsOfIndicators()
+    bonds_controller = bonds.BondsController()
 
     # Скрытые данные
     array_hidden_data = []
@@ -157,35 +158,13 @@ def assets():
         data[3][1] = f'{bond.format_number(float(data[3][1]))} ₽'
         array_hidden_data.append(data)
 
-    # Данные для календаря
-    calendar_array = []
-    calendar_dict = {}
-    try:
-        for i in range(len(array_hidden_data)):
-            calendar_dict['date'] = array_hidden_data[i][2][1]
-            calendar_dict['name'] = bond.return_saved_bonds_for_display()[i][2]
-            calendar_dict['coupon'] = bond.format_number(round(
-                float(bond.return_saved_bonds_for_display()[i][6].replace(',', '.')) *
-                bond.return_saved_bonds_for_display()[i][5], 2)) + ' ₽'
-            calendar_array.append(calendar_dict)
-            calendar_dict = {}
-    except TypeError or IndexError:
-        pass
-
-    # Костыль
-    calendar_array.sort(key=lambda dictionary: dictionary['date'][0:2])
-    calendar_array.sort(key=lambda dictionary: dictionary['date'][3:5])
-
     return render_template(
         'bonds.html',
         bond_array=bond.return_saved_bonds_for_display(),
-        summary_portfolio=bond.calculate_the_total_return_of_the_portfolio(),
         summary_price=bond.return_summary_price_for_display(),
         profitability_per_year=bond.profitability_per_year_for_display(),
-        profit_to_the_end=bond.calculation_of_all_references_to_the_end(),
-        profitability_per_year_by_sem_positions=bond.profitability_per_year_by_sem_positions_for_display(),
         array_hidden_data=array_hidden_data,
-        calendar_array=calendar_array
+        bonds_frame=bonds_controller.bonds_frame()
     )
 
 
