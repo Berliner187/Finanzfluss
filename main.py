@@ -154,7 +154,8 @@ def assets():
     array_hidden_data = []
     for item in bond.return_saved_bonds_for_display():
         data = parser.ResponseResultMOEX(item[1]).get_info()
-        # Костыль
+        ### Костыль
+        # Форматирование суммы купона
         data[3][1] = f'{bond.format_number(float(data[3][1]))} ₽'
         array_hidden_data.append(data)
 
