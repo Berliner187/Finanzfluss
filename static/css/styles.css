@@ -454,7 +454,7 @@ hr {
 
 .pills li:hover, .calendar:hover {
 	cursor: pointer;
-	background: linear-gradient(to right, rgba(34, 34, 34, .2) 50%, rgba(34, 34, 34, 0) 50%) left;
+	background: linear-gradient(to right, rgba(156, 156, 156, 0.2) 50%, rgba(105, 105, 105, 0) 50%) left;
 	transition: .3s ease-out;
     background-size: 200%;
 }
