@@ -156,7 +156,7 @@ def assets():
         data = parser.ResponseResultMOEX(item[1]).get_info()
         ### Костыль
         # Форматирование суммы купона
-        data[3][1] = f'{bond.format_number(float(data[3][1]))} ₽'
+        data[3][1] = bonds.FormatNumber('cur').get_format(float(data[3][1]))
         array_hidden_data.append(data)
 
     return render_template(
@@ -175,7 +175,7 @@ def delete_bond(bond_id):
     try:
         RequestProcessingInDataBase.delete_record(bond_id)
         return redirect("/assets/bonds")
-    except:
+    except Exception as e:
         split_error = "Ошибка при удалении: Не удалось удалить облигацию из базы данных."
         return render_template('error.html', error_code=split_error[0], error_text=split_error[1])
 

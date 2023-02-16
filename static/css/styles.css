@@ -79,6 +79,9 @@ section {
 .sidebar-container, .right-cards, footer {
     background-color: rgba(50, 50, 50, .5);
 }
+.sidebar-container, footer {
+    min-width: 1200px;
+}
 
 .entry, .underline-style {
     font-size: 22px;
@@ -906,11 +909,26 @@ footer p {
     margin: 5px;
 }
 footer a {
-    color: #C165DD;
     transition: .2s;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #4A7CD6;
 }
 footer a:hover {
     opacity: .8;
+}
+
+
+.default-button {
+    font-size: 26px;
+    padding: 8px;
+    width: fit-content;
+    margin: 0 auto;
+    background-color: #4A7CD6;
+}
+.default-button:hover {
+    background-color: rgb(255, 255, 255, 0);
+    color: #fefefe;
 }
 
 

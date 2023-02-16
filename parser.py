@@ -66,11 +66,7 @@ class ResponseResultMOEX:
                 element = element.replace('<b>', '')
             elif '</b>' in element:
                 element = element.replace('</b>', '')
-            # print(element)
-            # print(' '.join(re.findall(r'>([^><]+)<', element)))
             return ' '.join(re.findall(r'>([^><]+)<', element))
-
-        tmp_saved_bond = {}
 
         def read_saved_data():
             # Возвращает все сохраненные бумаги

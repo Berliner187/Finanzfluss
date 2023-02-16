@@ -454,7 +454,7 @@ class BondsController:
                 calendar_dict['date'] = array_hidden_data[i][2][1]
                 calendar_dict['name'] = bond.return_saved_bonds()[i][2]
                 calendar_dict['coupon'] = format_currency.get_format(
-                    bond.return_saved_bonds()[i][5] * bond.return_saved_bonds()[i][6])
+                    round(bond.return_saved_bonds()[i][5] * bond.return_saved_bonds()[i][6], 2))
 
                 calendar_array.append(calendar_dict)
                 calendar_dict = {}
