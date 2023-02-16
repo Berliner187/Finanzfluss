@@ -280,8 +280,7 @@ class SummaryAnalysisBondsOfIndicators:
 
     # Годовая доходность
     def return_profitability_per_year(self):
-        array_coupon_income = []
-        array_profit_percent = []
+        array_coupon_income, array_profit_percent = [], []
         array_saved_bonds = self.return_saved_bonds()
         for item in array_saved_bonds:
             coupon_income = (item[6] * item[5]) * item[8]
@@ -431,6 +430,7 @@ class BondsController:
         db = DataBaseManager()
         return db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
 
+    # Главная страница с облигациями
     def bonds_frame(self):
         # Данные для отображения
         bond = SummaryAnalysisBondsOfIndicators()
