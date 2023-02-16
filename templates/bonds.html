@@ -43,8 +43,8 @@
                 {% for calendar in bonds_frame[2] %}
                     <h2>{{ calendar }}</h2>
                     {% set s = bonds_frame[2][calendar]|length %}
-                        <hr>
                         {% for i in range(s) %}
+                        <hr>
                             <div class="calendar">
                                 <p>{{ bonds_frame[2][calendar][i]['date'] }}</p>
                                 <div>
