@@ -12,7 +12,9 @@
 """
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager
+import time
 import bonds
+import db_manager
 from bonds import COLUMNS_TABLE_BONDS
 from bonds import RequestProcessingInDataBase
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -111,8 +113,12 @@ def index():
 
 @app.route('/assets')
 def assets_blyat():
+    start_time = time.time()
+
     bond = bonds.SummaryAnalysisBondsOfIndicators()
     bonds_controller = bonds.BondsController()
+
+    print(f"about_bond --- {round(time.time() - start_time, 8)} seconds")
 
     return render_template(
         'assets.html',
@@ -130,6 +136,8 @@ def assets_blyat():
 
 @app.route('/assets/bonds', methods=['POST', 'GET'])
 def assets():
+    start_time = time.time()
+
     if request.method == 'POST':
         # Получение параметров облигации
         array_result_transmitted_data = []
@@ -150,21 +158,16 @@ def assets():
     bond = bonds.SummaryAnalysisBondsOfIndicators()
     bonds_controller = bonds.BondsController()
 
-    # Скрытые данные
-    array_hidden_data = []
-    for item in bond.return_saved_bonds_for_display():
-        data = parser.ResponseResultMOEX(item[1]).get_info()
-        ### Костыль
-        # Форматирование суммы купона
-        data[3][1] = bonds.FormatNumber('cur').get_format(float(data[3][1]))
-        array_hidden_data.append(data)
-
+    print(f"about_bond --- {round(time.time() - start_time, 5)} seconds")
     return render_template(
         'bonds.html',
+        name_app=NAME_APP,
+        title='Облигации',
+        header_link='Войти',
+        header_redirect='/login',
         bond_array=bond.return_saved_bonds_for_display(),
         summary_price=bond.return_summary_price_for_display(),
         profitability_per_year=bond.profitability_per_year_for_display(),
-        array_hidden_data=array_hidden_data,
         bonds_frame=bonds_controller.bonds_frame()
     )
 
@@ -182,17 +185,20 @@ def delete_bond(bond_id):
 
 @app.route('/assets/bonds/about/<string:ticker>')
 def about_bond(ticker):
-    bond_info = bonds.SummaryAnalysisBondsOfIndicators()
-    bonds_all = bond_info.get_bond_info()
+    start_time = time.time()
+
+    bonds_db = db_manager.DataBaseManager()
 
     # Поиск данных об облигации из БД
-    found_bond = []
-    for search_bond in bonds_all:
-        if search_bond[1] == ticker:
-            found_bond = search_bond
+    found_bond = bonds_db.select_row_from_table(bonds.BONDS_DATA_BASE, bonds.BONDS_TABLE_NAME, '*', 'ticker', ticker)
 
     # Экземпляр класса Контроллер, управляет бизнес-моделью и видом
     info_by_labels = bonds.BondsController()
+
+    iterable_time = 0.0009989738
+    get_from_db_time = round(time.time() - start_time, 10)
+    print(f"delta iterable_time and get_from_db_time: {round((get_from_db_time - iterable_time) / iterable_time * 100, 2)} %")
+    print(f"about_bond --- {round(time.time() - start_time, 10)} seconds")
 
     return render_template(
         'about-bond.html',
