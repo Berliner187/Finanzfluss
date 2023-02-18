@@ -32,6 +32,14 @@ h1 {
     font-size: 60px;
     margin: 0;
     user-select: none;
+    transition: .2s;
+}
+h1:hover {
+    background: linear-gradient(to right, rgb(10, 198, 255) 0%, rgba(74,60,219,1) 50%) left;
+    background-size: 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: .2s;
 }
 h2 {
     text-align: center;
@@ -65,7 +73,6 @@ section {
 
 
 .sidebar-container {
-    font-family: 'SFNS';
     border-radius: 50px;
     width: 100%;
     margin-bottom: 20px;
@@ -310,10 +317,10 @@ section {
     margin: 0;
 }
 .bond-in-portfolio div p {
-    font-size: 24px;
+    font-size: 22px;
 }
 .bond-in-portfolio div span {
-    font-size: 18px;
+    font-size: 16px;
     padding-top: 0;
 }
 
@@ -344,7 +351,7 @@ hr {
 .delete-button-container {
     position: fixed;
     align-self: center;
-    right: -5px;
+    right: 5px;
     margin-bottom: 35px;
 }
 .delete-button-container a {
@@ -353,8 +360,8 @@ hr {
     border-radius: 20px;
 }
 .delete-button-container a img {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     padding: 2px;
     opacity: .5;
     border-radius: 50%;
@@ -435,8 +442,12 @@ hr {
 
 
 /* Оформление списка */
+.block-pills {
+    margin: 0 auto;
+    width: 92%;
+}
 .pills {
-    width: 90%;
+    padding-left: 0;
 	margin: 0 auto;
 	list-style: none;
     padding-top: 10px;
@@ -482,7 +493,7 @@ hr {
 	box-shadow: .1em .2em .9em .7em rgba(0, 0, 0, .18);
 	transition: max-height .3s ease-out;
     margin-top: 10px;
-    padding-bottom: 20px;
+    padding-bottom: 15px;
 	max-height: 0;
 }
 .under-pills-content div {
@@ -492,7 +503,7 @@ hr {
 }
 .under-pills-content a, 
 .under-pills-content div {
-    font-size: 18px;
+    font-size: 16px;
 }
 .under-pills-content a {
     margin: 20px;
@@ -531,16 +542,16 @@ hr {
     text-align: center;
     border-radius: 40px;
     font-size: 32px;
-    margin-top: 50px;
-    margin-bottom: 50px;
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 .calendar {
-    font-family: 'SFNS';
     border-radius: 40px;
     margin: 10px;
 }
 .calendar p {
+    font-weight: 300;
     margin: 0;
     font-size: 32px;
 }
@@ -550,6 +561,7 @@ hr {
     justify-content: space-between;
 }
 .calendar div span {
+    font-weight: 200;
     font-size: 20px;
 }
 
