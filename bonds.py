@@ -14,6 +14,7 @@
 """
 from db_manager import DataBaseManager
 from parser import ResponseResultMOEX
+import datetime
 # UNIQUE ON CONFLICT IGNORE
 
 BONDS_DATA_BASE = 'bonds.db'
@@ -430,6 +431,27 @@ class BondsController:
         db = DataBaseManager()
         return db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
 
+    @staticmethod
+    def get_format_date(date_array):
+        # Форматирование даты
+        months = ['декабря', 'января', 'февраля', 'марта', 'апреля',
+                  'мая', 'июня', 'июля', 'августа', 'сентября', 'ноября']
+        weeks = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье']
+        for dict_calendar in date_array:
+            date_split = dict_calendar['date'].split('.')
+            for item in range(len(date_split)):
+                date_split[item] = int(date_split[item])
+            day_week = weeks[datetime.datetime(date_split[2], date_split[1], date_split[0]).weekday()]
+            day = date_split[0]
+            month = months[date_split[1]]
+            if datetime.datetime.now().year < date_split[2]:
+                year = f"'{str(date_split[2])[2:]}"
+            else:
+                year = ''
+
+            dict_calendar['date'] = f"{day_week}, {day} {month} {year}"
+        return date_array
+
     # Главная страница с облигациями
     def bonds_frame(self):
         # Данные для отображения
@@ -440,18 +462,30 @@ class BondsController:
         format_currency = FormatNumber('cur')
 
         # Данные внутри контейнера с облигацией (при раскрытии)
-        array_hidden_data = []
-        for item in bond.return_saved_bonds():
-            data = ResponseResultMOEX(item[1]).get_info()
-            data[3][1] = format_currency.get_format(float(data[3][1]))
-            array_hidden_data.append(data)
+        array_data_from_moex = []
+        try:
+            hidden_data_dict = {}
+            for item in bond.return_saved_bonds():
+                data = ResponseResultMOEX(item[1]).get_info()
+                data[3][1] = format_currency.get_format(float(data[3][1]))
+
+                hidden_data_dict['profitability'] = data[0]
+                hidden_data_dict['maturity_date'] = data[1]
+                hidden_data_dict['coupon_payment_date'] = data[2]
+                hidden_data_dict['coupon'] = data[3]
+
+                array_data_from_moex.append(hidden_data_dict)
+                hidden_data_dict = {}
+        except TypeError or IndexError:
+            pass
+
         # Данные для календаря
         calendar_array = []
         try:
             calendar_dict = {}
-            for i in range(len(array_hidden_data)):
+            for i in range(len(array_data_from_moex)):
 
-                calendar_dict['date'] = array_hidden_data[i][2][1]
+                calendar_dict['date'] = array_data_from_moex[i]['coupon_payment_date'][1]
                 calendar_dict['name'] = bond.return_saved_bonds()[i][2]
                 calendar_dict['coupon'] = format_currency.get_format(
                     round(bond.return_saved_bonds()[i][5] * bond.return_saved_bonds()[i][6], 2))
@@ -464,6 +498,7 @@ class BondsController:
         # Костыль
         calendar_array.sort(key=lambda dictionary: dictionary['date'][0:2])
         calendar_array.sort(key=lambda dictionary: dictionary['date'][3:5])
+        self.get_format_date(calendar_array)
 
         label_portfolio = {
             'Портфель': format_currency.get_format(bond.calculate_the_total_return_of_the_portfolio()),
@@ -480,7 +515,11 @@ class BondsController:
             'Календарь': calendar_array
         }
 
-        return label_portfolio, label_profitability, label_calendar
+        label_bonds = {
+            'Данные с MOEX': array_data_from_moex
+        }
+
+        return label_portfolio, label_profitability, label_calendar, label_bonds
 
     # Страница с детальной информацией о бумаге
     def about_bond(self, ticker):
@@ -507,27 +546,37 @@ class BondsController:
         response_from_moex = list(ResponseResultMOEX(ticker).get_info())
         # Костыль
         response_from_moex[3][1] = format_currency.get_format(float(response_from_moex[3][1]))
+        response_from_moex[0][1] = format_percent.get_format(float(response_from_moex[0][1].replace('%', '')))
         about_the_release_data = {
             'maturity_date': response_from_moex[1],
             'coupon_payment_date': response_from_moex[2],
             'coupon_amount': response_from_moex[3],
-            'nominal': ['Номинал', format_currency.get_format(bond[3])],
-            'payments_per_year': ['Выплат в год', bond[8]],
-            'payments_left': ['Осталось выплат', bond[9]],
+            'nominal':
+                ['Номинал', format_currency.get_format(bond[3])],
+            'payments_per_year':
+                ['Выплат в год', bond[8]],
+            'payments_left':
+                ['Осталось выплат', bond[9]],
             'nominal_profitability':
                 ['Номинальная доходность', format_percent.get_format(calculation.nominal_profitability())],
-            'current_profitability': response_from_moex[0],
+            'current_profitability':
+                ['Доходность (MOEX)', response_from_moex[0][1]],
         }
 
         ### ЛЕЙБЛ: ПОКАЗАТЕЛИ ###
         indicators = {
-            'aci': ['Накопленный купонный доход', '-'],
+            'aci':
+                ['Накопленный купонный доход', '-'],
             'difference_nominal_and_price':
                 ['Разность номинала и цены', calculation.get_nominal_value_difference_for_display()],
-            'monthly_income': ['Доход за месяц', calculation.get_profitability_per_month_for_display()],
-            'income_per_quarter': ['Доход за квартал', calculation.get_profitability_per_quarter_for_display()],
-            'income_per_half_year': ['Доход за полгода', calculation.get_profitability_per_half_year_for_display()],
-            'income_per_year': ['Доходность за год', calculation.calculate_profitability_per_year_for_display()],
+            'monthly_income':
+                ['Доход за месяц', calculation.get_profitability_per_month_for_display()],
+            'income_per_quarter':
+                ['Доход за квартал', calculation.get_profitability_per_quarter_for_display()],
+            'income_per_half_year':
+                ['Доход за полгода', calculation.get_profitability_per_half_year_for_display()],
+            'income_per_year':
+                ['Доходность за год', calculation.calculate_profitability_per_year_for_display()],
             'profitability_to_maturity_date':
                 ['Доходность к дате погашения', calculation.get_profitability_to_end_for_display()],
             'tax_per_year':
