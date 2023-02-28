@@ -19,7 +19,8 @@ body {
     background-color: black;
     font-family: 'Inter';
     color: #e4e4e4;
-    background: url('../img/bg-001.png');
+    /* background: url('../img/bg-001.png'); */
+    background-color: #676bbe;
     background-size: 100%;
     background-attachment: fixed;
 }
@@ -79,6 +80,7 @@ section {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    backdrop-filter: blur(10px);
 }
 .sidebar-container div, h1 {
     padding: 10px 30px 10px 30px;
@@ -149,7 +151,6 @@ section {
 }
 
 .about-program-container {
-    backdrop-filter: blur(16px);
     width: 1500px;
     padding-left: 100px;
     padding-right: 100px;
@@ -462,7 +463,7 @@ hr {
 	padding: 10px 0;
 	position: relative;
     border-color: #232323;
-    background: linear-gradient(to left, rgba(34, 34, 34, 0) 50%, rgba(34, 34, 34, 0) 50%) right;
+    background: linear-gradient(to left, rgba(90, 90, 90, 0.05) 50%, rgba(34, 34, 34, 0) 50%) right;
     background-size: 200%;
 }
 
@@ -507,6 +508,53 @@ hr {
 }
 .under-pills-content a {
     margin: 20px;
+    padding-left: 50px;
+    padding-right: 50px;
+    width: 200px;
+}
+.data-taken-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.data-taken-container p,
+.data-taken-container a {
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+}
+.data-taken-container a {
+    color: rgba(255, 0, 0, 0.85);
+    transition: .2s;
+}
+.data-taken-container a:hover {
+    opacity: .6;
+}
+
+.buy-sell-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.buy-sell-container a {
+    border-radius: 30px;
+    font-size: 16px;
+    padding: 10px;
+}
+.btn-buy {
+    background-color: rgba(26, 111, 223, 0.9);
+}
+.btn-sell {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #222;
+}
+
+.accent-btn {
+    background: rgba(255, 255, 255, 0.9);
+}
+.accent-btn:hover {
+    width: 80%;
 }
 
 /* Кнопки */
@@ -544,6 +592,9 @@ hr {
     font-size: 32px;
     margin-top: 30px;
     margin-bottom: 30px;
+    box-shadow: 1px 2px 22px -6px rgba(79,79,79,0.75);
+    -webkit-box-shadow: 1px 2px 22px -6px rgba(79,79,79,0.75);
+    -moz-box-shadow: 1px 2px 22px -6px rgba(79,79,79,0.75);
 }
 
 .calendar {
@@ -586,10 +637,11 @@ hr {
 
 /* БЛЮР БЛОКОВ */
 .login-container, .glass-container, 
-.sidebar-container, .card-container,
-.add-new-bond-container, .about-bond-container, .about-program-container,
+.card-container,
+.add-new-bond-container, .about-bond-container, 
+.about-program-container, .about-program-container
 footer {
-    backdrop-filter: blur(14px);
+    backdrop-filter: blur(0px);
 }
 
 
@@ -616,6 +668,17 @@ footer {
 .purple {
     background: rgba(73,70,215, .5);
     background: linear-gradient(90deg, rgba(73,70,215,.5) 40%, rgba(116,70,215,.5) 85%);
+}
+.cactus {
+    background: rgba(234,141,141, .5);
+    background: linear-gradient(55deg, rgba(234,141,141,1) 0%, rgba(168,144,254,1) 100%); 
+}
+.green-beach {
+    background: rgba(2,170,189, .5);
+    background: linear-gradient(55deg, rgba(2,170,189,.5) 0%, rgba(0,205,172,.5) 100%); 
+}
+.blue {
+    background: rgba(0,192,255, .5);
 }
 .violet {
     background-color: rgba(33, 20, 50, .5);
@@ -777,7 +840,7 @@ header {
 .btn-sub-white {
     cursor: pointer;
     transition: .3s;
-    background-color: #ABC270;
+    background-color: #e2e2e2;
     color: #ffffff;
 }
 .btn-sub-white:hover {
@@ -843,7 +906,7 @@ header {
     box-shadow: 0 0 15px 4px rgba(22,22,22,0.1);
 }
 .portfolio-indicators div p {
-    font-size: 28px;
+    font-size: 24px;
     margin: 10px;
 }
 .portfolio-indicators div span {
@@ -890,7 +953,7 @@ header {
 }
 .bond-info-container h3 {
     text-align: center;
-    font-size: 36px;
+    font-size: 32px;
     margin: 0;
 }
 .bond-info-container div {
@@ -899,7 +962,7 @@ header {
     justify-content: space-between;
 }
 .bond-info-container div p {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 
