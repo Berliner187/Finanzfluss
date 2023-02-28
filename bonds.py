@@ -75,10 +75,8 @@ class FormatNumber:
 
         if self.type_number == 'cur':
             return f'{format_number(number)} ₽'
-
         elif self.type_number == 'per':
             return f'{format_number(number)} %'
-
         else:
             return format_number(number)
 
@@ -109,9 +107,6 @@ class Bonds:
         self.total_payments = data_bond[9]
         self.date_of_purchase = data_bond[10]
 
-    def date(self):
-        return
-
     # Расчет купонного дохода
     def calculate_coupon_profit(self, quantity_payments):
         coupon_income = (self.coupon_value * self.quantity) * quantity_payments
@@ -132,7 +127,6 @@ class Bonds:
 
     # Расчет доходности к концу
     def calculate_profitability_per_year(self):
-        # !!! ДУБЛЕР !!!
         # Расчет годового дохода
         # ДОХОД В РУБЛЯХ, ДОХОД В ПРОЦЕНТАХ
         coupon_income = (self.coupon_value * self.quantity) * self.number_of_payments_per_year
@@ -142,42 +136,70 @@ class Bonds:
         return coupon_income, profit_percent
 
     def calculate_profitability_per_year_for_display(self):
-        coupon_income = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_profitability_per_year()[0])
-        profit_percent = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_profitability_per_year()[1])
-        return f"{coupon_income} ₽ • ({profit_percent} %)"
+        coupon_income = FormatNumber('cur').get_format(self.calculate_profitability_per_year()[0])
+        profit_percent = FormatNumber('per').get_format(self.calculate_profitability_per_year()[1])
+        return f"{coupon_income} • ({profit_percent})"
 
     def get_profitability_to_end_for_display(self):
-        profit = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[0])
-        percent_profitability = SummaryAnalysisBondsOfIndicators.format_number(self.calculate_all_profitability()[1])
-        return f"{profit} ₽ • ({percent_profitability} %)"
+        profit = FormatNumber('cur').get_format(self.calculate_all_profitability()[0])
+        percent_profitability = FormatNumber('per').get_format(self.calculate_all_profitability()[1])
+        return f"{profit} • ({percent_profitability})"
 
     # Получение суммарной стоимости бумаг на момент покупки
-    def get_summary_price(self):
-        return round(self.average_price * self.quantity, 2)
+    def get_summary_price(self, ticker):
+        return round(self.average_price * self.quantity + self.get_aci_of_security_in_portfolio(ticker), 2)
 
-    def get_summary_price_for_display(self):
-        return FormatNumber('cur').get_format(self.get_summary_price())
+    def get_summary_price_for_display(self, ticker):
+        return FormatNumber('cur').get_format(self.get_summary_price(ticker))
 
     # Получение доли бумаги в портфеле
-    def get_share_in_portfolio(self):
+    def get_share_in_portfolio(self, ticker):
         bond_instance = SummaryAnalysisBondsOfIndicators()
         summary_invested_array = bond_instance.return_summary_price()
         summary_invested = sum(summary_invested_array)
-        return round(self.get_summary_price() * 100 / summary_invested, 2)
+        return round(self.get_summary_price(ticker) * 100 / summary_invested, 2)
 
-    # Суммарно вложено (первоначальная стоимость в портфеле)
-    @staticmethod
-    def calculate_summary_price():
-        # !!! ДУБЛЕР !!!
-        array_summary_price = []
-        saved_bonds_array = SummaryAnalysisBondsOfIndicators.return_saved_bonds()
-        for bond_from_array in saved_bonds_array:
-            price = round((bond_from_array[4] * bond_from_array[5]) + bond_from_array[7], 2)
-            array_summary_price.append(price)
-        return array_summary_price
+    def get_profitability(self):
+        """
+            Расчет доходности: в месяц, квартал, полугодие, год
+        """
+        # Купонный доход за период
+        coupon_profit = self.coupon_value * self.quantity
+        # Доходность (по умолчанию: 0)
+        per_month = per_quarter = per_half_year = 0
+
+        if self.number_of_payments_per_year == 2:
+            per_month = round(coupon_profit * 2 / 12, 2)
+            per_quarter = round(coupon_profit / 2, 2)
+            per_half_year = round(coupon_profit, 2)
+        elif self.number_of_payments_per_year == 4:
+            per_month = round(coupon_profit * 4 / 12, 2)
+            per_quarter = round(coupon_profit, 2)
+            per_half_year = round(coupon_profit * 2, 2)
+        elif self.number_of_payments_per_year == 12:
+            per_month = round(coupon_profit, 2)
+            per_quarter = round(coupon_profit * 3, 2)
+            per_half_year = round(coupon_profit * 6, 2)
+
+        per_year, per_year_in_percent = self.calculate_profitability_per_year()
+
+        # Возвращается в виде словаря
+        return {
+            'per_month': per_month, 'per_quarter': per_quarter,
+            'per_half_year': per_half_year, 'per_year': per_year
+        }
+
+    def get_profitability_for_display(self):
+        dict_prof = self.get_profitability()
+        dict_prof['per_month'] = FormatNumber('cur').get_format(dict_prof['per_month'])
+        dict_prof['per_quarter'] = FormatNumber('cur').get_format(dict_prof['per_quarter'])
+        dict_prof['per_half_year'] = FormatNumber('cur').get_format(dict_prof['per_half_year'])
+
+        return dict_prof
 
     def get_profitability_per_month(self):
-        profit = self.coupon_value * self.quantity  # Годовой доход
+        # ! НЕ ИСПОЛЬЗУЕТСЯ
+        profit = self.coupon_value * self.quantity
         if self.number_of_payments_per_year == 2:
             return round(profit * 2 / 12, 2)
         elif self.number_of_payments_per_year == 4:
@@ -187,16 +209,12 @@ class Bonds:
         else:
             return 0
 
-    def get_profitability_per_month_for_display(self):
-        if self.number_of_payments_per_year != 12: tilda = '~'
-        else: tilda = ''
-        return f'{tilda}{SummaryAnalysisBondsOfIndicators.format_number(round(self.get_profitability_per_month(), 2))} ₽'
-
     def get_profitability_per_quarter(self):
-        if self.number_of_payments_per_year == 4:
-            return self.coupon_value * self.quantity
-        elif self.number_of_payments_per_year == 2:
+        # НЕ ИСПОЛЬЗУЕТСЯ
+        if self.number_of_payments_per_year == 2:
             return (self.coupon_value * self.quantity) / 2
+        elif self.number_of_payments_per_year == 4:
+            return self.coupon_value * self.quantity
         elif self.number_of_payments_per_year == 12:
             return (self.coupon_value * self.quantity) * 3
         else:
@@ -205,28 +223,119 @@ class Bonds:
     def get_profitability_per_half_year(self):
         result = 0
         if self.number_of_payments_per_year == 4:
-            result = (self.coupon_value * self.quantity) / 2
+            result = (self.coupon_value * self.quantity) * 2
         elif self.number_of_payments_per_year == 2:
             result = self.coupon_value * self.quantity
         elif self.number_of_payments_per_year == 12:
             result = (self.coupon_value * self.quantity) * 6
         return round(result, 2)
 
+    def get_profitability_per_month_for_display(self):
+        tilda = '~' if self.number_of_payments_per_year != 12 else ''
+        return tilda + FormatNumber("cur").get_format(round(self.get_profitability_per_month(), 2))
+
     def get_profitability_per_quarter_for_display(self):
-        return SummaryAnalysisBondsOfIndicators.format_number(round(self.get_profitability_per_quarter(), 2)) + ' ₽'
+        return FormatNumber('cur').get_format(round(self.get_profitability_per_quarter(), 2))
 
     def get_profitability_per_half_year_for_display(self):
         return FormatNumber('cur').get_format(self.get_profitability_per_half_year())
 
-    def about_bond_indicators(self):
-        profitability_per_quarter = 0
-        profitability_per_year = 0
+    def get_cnt_days(self, ticker):
+        payment_period = 0
+        if self.number_of_payments_per_year == 2:
+            payment_period = 182
+        elif self.number_of_payments_per_year == 4:
+            payment_period = 91
+        elif self.number_of_payments_per_year == 12:
+            payment_period = 29.5
 
-        db = DataBaseManager()
-        # data_bond = db.select_row_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*', 'ticker', ticker)
+        response = ResponseResultMOEX(ticker).get_info()
+        maturity_date_ar = response[1][1].split('.')   # Дата погашения
+        payment_date_ar = response[2][1].split('.')    # Дата выплаты
+        # преобразование в формат datetime дат: выплаты купона и даты погашения
+        maturity_date = datetime.datetime(int(maturity_date_ar[2]), int(maturity_date_ar[1]), int(maturity_date_ar[0]))
+        payment_date = datetime.datetime(int(payment_date_ar[2]), int(payment_date_ar[1]), int(payment_date_ar[0]))
+        # вычисляем кол-во дней до погашения
+        days_before_maturity = maturity_date.date().toordinal() - payment_date.date().toordinal()
 
-        profitability_per_year = self.calculate_profitability_per_year()
-        return
+        return payment_period, days_before_maturity
+
+    @staticmethod
+    def get_time_before_maturity(ticker):
+        current_date = datetime.datetime.now().date()
+        response = ResponseResultMOEX(ticker).get_info()
+        maturity_date_ar = response[1][1].split('.')  # Дата погашения
+        maturity_date = datetime.datetime(int(maturity_date_ar[2]), int(maturity_date_ar[1]), int(maturity_date_ar[0])).date()  # дата погашения
+        months_left = (maturity_date - current_date).days // 30
+        years_left = months_left // 12
+        months_left = months_left % 12
+        return years_left, months_left
+
+    def get_time_before_maturity_for_display(self, ticker):
+        years_before_maturity, months_before_maturity = self.get_time_before_maturity(ticker)
+        year_str = ''
+        if years_before_maturity == 1:
+            year_str = 'год'
+        elif 2 <= years_before_maturity <= 4:
+            year_str = 'года'
+        elif years_before_maturity >= 5:
+            year_str = 'лет'
+
+        months_str = f', {months_before_maturity} мес' if months_before_maturity else ''
+        if not years_before_maturity:
+            return f'{months_str}'
+        else:
+            return f'{years_before_maturity} {year_str}{months_str}'
+
+    def get_payments_left(self, ticker):
+
+        years, months = self.get_time_before_maturity(ticker)
+
+        cnt = 0
+        if self.number_of_payments_per_year == 4:
+            for i in range(months):
+                if i % 3 == 0:
+                    cnt += 1
+        elif self.number_of_payments_per_year == 2:
+            for i in range(months):
+                if i % 6 == 0:
+                    cnt += 1
+        elif self.number_of_payments_per_year == 12:
+            for i in range(months):
+                if i % 1 == 0:
+                    cnt += 1
+
+        remaining_payments = (self.number_of_payments_per_year * years) + cnt
+
+        return remaining_payments
+
+    def get_aci(self, ticker):
+        # НКД = (Номинал * Купонная ставка * Дней между выплатами купонов) / (Дней в году)
+        if datetime.datetime.now().year % 4 == 0:
+            days_in_year = 366
+        else:
+            days_in_year = 365
+        # Ответ с MOEX
+        response_moex = ResponseResultMOEX(ticker).get_info()
+        # Задаем даты
+        coupon_date = datetime.datetime.strptime(response_moex[2][1], '%d.%m.%Y')
+        today = datetime.datetime.today()
+        # Возвращает: периодичность выплаты купона и дней до погашения
+        payment_period, days_before_maturity = self.get_cnt_days(ticker)
+        # Расчет кол-ва дней с момента выплаты последнего купона
+        days_to_coupon = payment_period - (coupon_date - today).days
+        # Расчет НКД и возвращение его
+        return round((self.nominal * (self.nominal_profitability() / 100) * days_to_coupon/days_in_year), 2)
+
+    def get_aci_for_display(self, ticker):
+        return FormatNumber('cur').get_format(self.get_aci(ticker))
+
+    def get_aci_of_security_in_portfolio(self, ticker):
+        return round(self.get_aci(ticker) * self.quantity, 2)
+
+    # Весь НКД бумаги в портфеле (НКД на шт. * кол-во)
+    def get_aci_of_security_in_portfolio_for_display(self, ticker):
+        return FormatNumber('cur').get_format(self.get_aci_of_security_in_portfolio(ticker))
 
     # Расчет разницы номинала и цены при покупке
     def get_nominal_value_difference(self):
@@ -281,6 +390,7 @@ class SummaryAnalysisBondsOfIndicators:
 
     # Годовая доходность
     def return_profitability_per_year(self):
+        # ! ПЕРЕПИСАТЬ
         array_coupon_income, array_profit_percent = [], []
         array_saved_bonds = self.return_saved_bonds()
         for item in array_saved_bonds:
@@ -327,6 +437,7 @@ class SummaryAnalysisBondsOfIndicators:
 
     # Суммарно вложено
     def return_summary_price(self):
+        # !!! Изменить подход
         array_summary_price = []
         saved_bonds_array = self.return_saved_bonds()
         for bond_from_array in saved_bonds_array:
@@ -410,6 +521,7 @@ class SummaryAnalysisBondsOfIndicators:
 
 
 class RequestProcessingInDataBase:
+    # Перенести в контроллер
     @staticmethod
     def add_bond(data_bond):
         data_base.write_in_table(BONDS_DATA_BASE, BONDS_TABLE_EXECUTE, data_bond)
@@ -433,6 +545,16 @@ class BondsController:
 
     @staticmethod
     def get_format_date(date_array):
+        """
+            Optimize:
+            formatted_dates = []
+                for dict_calendar in date_array:
+                    date = datetime.datetime.strptime(dict_calendar['date'], "%d.%m.%Y")
+                    day_week = calendar.day_name[date.weekday()]
+                    year = f"'{str(date.year)[2:]}" if datetime.datetime.now().year < date.year else ""
+                    formatted_dates.append({"date": f"{day_week}, {date.day} {calendar.month_name[date.month]} {year}"})
+                return formatted_dates
+        """
         # Форматирование даты
         months = ['декабря', 'января', 'февраля', 'марта', 'апреля',
                   'мая', 'июня', 'июля', 'августа', 'сентября', 'ноября']
@@ -460,6 +582,7 @@ class BondsController:
         ## Вызов классов
         # Класс Format для форматирования строк
         format_currency = FormatNumber('cur')
+        format_percent = FormatNumber('per')
 
         # Данные внутри контейнера с облигацией (при раскрытии)
         array_data_from_moex = []
@@ -467,6 +590,7 @@ class BondsController:
             hidden_data_dict = {}
             for item in bond.return_saved_bonds():
                 data = ResponseResultMOEX(item[1]).get_info()
+                data[0][1] = format_percent.get_format(float(data[0][1].replace('%', '')))
                 data[3][1] = format_currency.get_format(float(data[3][1]))
 
                 hidden_data_dict['profitability'] = data[0]
@@ -476,24 +600,22 @@ class BondsController:
 
                 array_data_from_moex.append(hidden_data_dict)
                 hidden_data_dict = {}
-        except TypeError or IndexError:
-            pass
+        except TypeError or IndexError as e:
+            print(e)
 
         # Данные для календаря
         calendar_array = []
         try:
             calendar_dict = {}
             for i in range(len(array_data_from_moex)):
-
                 calendar_dict['date'] = array_data_from_moex[i]['coupon_payment_date'][1]
                 calendar_dict['name'] = bond.return_saved_bonds()[i][2]
                 calendar_dict['coupon'] = format_currency.get_format(
                     round(bond.return_saved_bonds()[i][5] * bond.return_saved_bonds()[i][6], 2))
-
                 calendar_array.append(calendar_dict)
                 calendar_dict = {}
-        except TypeError or IndexError:
-            pass
+        except TypeError or IndexError as e:
+            print(e)
 
         # Костыль
         calendar_array.sort(key=lambda dictionary: dictionary['date'][0:2])
@@ -537,8 +659,8 @@ class BondsController:
         label_head = {
             'ticker': ticker,
             'name': bond[2],
-            'total_invested': format_currency.get_format(calculation.get_summary_price()),
-            'share_in_portfolio': format_percent.get_format(calculation.get_share_in_portfolio())
+            'total_invested': ['Суммарная стоимость', format_currency.get_format(calculation.get_summary_price(ticker))],
+            'share_in_portfolio': format_percent.get_format(calculation.get_share_in_portfolio(ticker))
         }
 
         ### ЛЕЙБЛ: О ВЫПУСКЕ ###
@@ -548,6 +670,8 @@ class BondsController:
         response_from_moex[3][1] = format_currency.get_format(float(response_from_moex[3][1]))
         response_from_moex[0][1] = format_percent.get_format(float(response_from_moex[0][1].replace('%', '')))
         about_the_release_data = {
+            'term_before_maturity':
+                ['До погашения осталось', calculation.get_time_before_maturity_for_display(ticker)],
             'maturity_date': response_from_moex[1],
             'coupon_payment_date': response_from_moex[2],
             'coupon_amount': response_from_moex[3],
@@ -556,7 +680,7 @@ class BondsController:
             'payments_per_year':
                 ['Выплат в год', bond[8]],
             'payments_left':
-                ['Осталось выплат', bond[9]],
+                ['Осталось выплат', calculation.get_payments_left(ticker)],
             'nominal_profitability':
                 ['Номинальная доходность', format_percent.get_format(calculation.nominal_profitability())],
             'current_profitability':
@@ -566,27 +690,39 @@ class BondsController:
         ### ЛЕЙБЛ: ПОКАЗАТЕЛИ ###
         indicators = {
             'aci':
-                ['Накопленный купонный доход', '-'],
+                ['Накопленный купонный доход', calculation.get_aci_for_display(ticker)],
             'difference_nominal_and_price':
                 ['Разность номинала и цены', calculation.get_nominal_value_difference_for_display()],
             'monthly_income':
-                ['Доход за месяц', calculation.get_profitability_per_month_for_display()],
+                ['Доход за месяц', calculation.get_profitability_for_display()['per_month']],
             'income_per_quarter':
-                ['Доход за квартал', calculation.get_profitability_per_quarter_for_display()],
+                ['Доход за квартал', calculation.get_profitability_for_display()['per_quarter']],
             'income_per_half_year':
-                ['Доход за полгода', calculation.get_profitability_per_half_year_for_display()],
+                ['Доход за полгода', calculation.get_profitability_for_display()['per_half_year']],
             'income_per_year':
                 ['Доходность за год', calculation.calculate_profitability_per_year_for_display()],
             'profitability_to_maturity_date':
                 ['Доходность к дате погашения', calculation.get_profitability_to_end_for_display()],
             'tax_per_year':
-                ['Предварительный годовой налог', calculation.get_tax_per_year_for_display()],
+                ['Предварительный годовой налог', calculation.get_tax_per_year_for_display()]
         }
 
         ### ЛЕЙБЛ: В ПОРТФЕЛЕ ###
         in_portfolio = {
-            'average_price': ['Цена', format_currency.get_format(bond[4])],
-            'quantity': ['Количество', f'{bond[5]} шт.']
+            'average_price':
+                ['Цена', format_currency.get_format(bond[4])],
+            'quantity':
+                ['Количество', f'{bond[5]} шт.'],
+            'date_purchase':
+                ['Дата покупки', bond[10]],
+            'aci':
+                ['Накопленный купонный доход', calculation.get_aci_of_security_in_portfolio_for_display(ticker)]
         }
 
         return label_head, about_the_release_data, indicators, in_portfolio
+
+
+# control = BondsController()
+# bond_calculation = Bonds(control.get_bond_info('RU000A105PP9'))
+# print(bond_calculation.get_time_before_maturity_for_display('RU000A105PP9'))
+# print(bond_calculation.get_aci())
