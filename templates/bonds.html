@@ -12,7 +12,7 @@
     
     <!-- Карточки слева -->
     <div class="cards-container-left">
-        <div class="card-container left-cards purple">
+        <div class="card-container left-cards blue">
             {% for key in bonds_frame[0] %}
                 <h2>{{ key }}</h2>
                 <span id="amount_portfolio">{{ bonds_frame[0][key] }}</span>
@@ -24,6 +24,7 @@
                 <span>{{ bonds_frame[1][key][0] }}</span>
                 <span>{{ bonds_frame[1][key][1] }}</span>
             {% endfor %}
+            <a href="/assets/bonds/statistics}}" class="entry">Посмотреть статистику</a>
         </div>
         <div class="card-container left-cards violet">
             {% for calendar in bonds_frame[2] %}
@@ -76,15 +77,33 @@
                             <span>Тикер</span>
                             <span>{{ bond_array[bond][1] }}</span>
                         </div>
-                        {% for key in bonds_frame[3] %}
-                            {% for key_under in bonds_frame[3][key][0] %}
+                        <section class="data-taken-container">
+                            <p>Данные взяты с <a target="_blank" href="https://www.moex.com/en/bondization">Московской Биржи</a>.</p>
+                        </section>
+                        {% for key_data_from_moex in bonds_frame[3] %}
+                            {% set data_array = bonds_frame[3][key_data_from_moex][bond] %}
                             <div>
-                                <span>{{ bonds_frame[3][key][0][key_under][0] }}</span>
-                                <span>{{ bonds_frame[3][key][0][key_under][1] }}</span>
+                                <span>{{ data_array['profitability'][0] }}</span>
+                                <span>{{ data_array['profitability'][1] }}</span>
                             </div>
-                            {% endfor %}
+                            <div>
+                                <span>{{ data_array['maturity_date'][0] }}</span>
+                                <span>{{ data_array['maturity_date'][1] }}</span>
+                            </div>
+                            <div>
+                                <span>{{ data_array['coupon_payment_date'][0] }}</span>
+                                <span>{{ data_array['coupon_payment_date'][1] }}</span>
+                            </div>
+                            <div>
+                                <span>{{ data_array['coupon'][0] }}</span>
+                                <span>{{ data_array['coupon'][1] }}</span>
+                            </div>
                         {% endfor %}
-                        <a href="/assets/bonds/about/{{ bond_array[bond][1] }}" class="entry">Подробнее</a>
+                        <a href="bonds/about/{{ bond_array[bond][1] }}" class="entry accent-btn">Перейти</a>
+                        <section class="buy-sell-container">
+                            <a href="#" class="btn-buy">Купить</a>
+                            <a href="#" class="btn-sell">Продать</a>
+                        </section>
                     </div>
                 </ol>
             </div>
