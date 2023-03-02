@@ -17,7 +17,9 @@ from csv import DictWriter, DictReader
 from ast import literal_eval
 
 from db_manager import DataBaseManager
-FILE_RESPONSE = f'tmp/response_from_moex.dat'
+
+FOLDER_RESPONSE = 'tmp'
+FILE_RESPONSE = f'{FOLDER_RESPONSE}/response_from_moex.dat'
 fields_response = ['ticker', 'profitability', 'maturity_date', 'coupon_amount', 'payment_date']
 
 
@@ -44,6 +46,7 @@ headers = {
 
 
 if os.path.exists(FILE_RESPONSE) is False:
+    os.mkdir(FOLDER_RESPONSE)
     with open(FILE_RESPONSE, mode="a", encoding='utf-8') as data:
         logg_writer = DictWriter(data, fieldnames=fields_response, delimiter=';')
         logg_writer.writeheader()
