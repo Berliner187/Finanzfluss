@@ -35,19 +35,6 @@ CATEGORIES_WASTES, CATEGORIES_RECEIPTS = [], []
 """
 
 
-# WASTES = 'files/wastes.dat'
-# RECEIPTS = 'files/receipts.dat'
-#
-# def refill_categories(file_type_transaction, array_type_transaction):
-#     file = open(file_type_transaction, encoding='utf-8')
-#     file_data = file.readlines()
-#     for category in file_data:
-#         array_type_transaction.append(category)
-#
-# refill_categories(WASTES, CATEGORIES_WASTES)
-# refill_categories(RECEIPTS, CATEGORIES_RECEIPTS)
-
-
 @app.route('/login', methods=["POST", "GET"])
 def login():
     title = 'Вход'
@@ -338,6 +325,3 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=False)
-    # app.run(host='192.168.1.5', port=5000, debug=False)
-    # app.run(host='192.168.31.204', port=5000, debug=False)
-    # app.run(host='192.168.57.236', port=5000, debug=False)
