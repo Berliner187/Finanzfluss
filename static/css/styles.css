@@ -879,6 +879,61 @@ header {
     border-radius: 40px;
 }
 
+
+/* ТЕКСТ ОБ ОБЛИГАЦИЯХ */
+.what-is-bond-container {
+    width: 1700px;
+    margin: 0 auto;
+    border-radius: 40px;
+    background-color: rgba(34, 34, 34, .5);
+    padding: 30px;
+}
+.what-is-bond-container-head-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.what-is-bond-container div h2 {
+    text-align: center;
+    font-size: 40px;
+}
+.what-is-bond-container div p {
+    text-indent: 40px;
+    font-size: 22px;
+}
+.what-is-bond-container div div {
+    width: 45%;
+}
+
+.what-is-bond-container-head-info div,
+.what-is-bond-container-other-information div,
+.what-is-bond-container-resume {
+    padding: 20px;
+    border-radius: 30px;
+    background-color: rgba(194, 194, 194, .2);
+}
+.what-is-bond-container-other-information {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.what-is-bond-container-other-information div {
+    width: 30%;
+    height: fit-content;
+}
+.what-is-bond-container-resume,
+.what-is-bond-container-other-information div {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.what-is-bond-container-resume {
+    width: 50%;
+    margin: 0 auto;
+}
+
+
+
 .head-bond-info {
     padding-left: 5.5%;
     padding-right: 6.5%;

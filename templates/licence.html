@@ -1,25 +1,13 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link type="image/png" href="{{ url_for('static', filename='img/icons/moon.png')}}" rel="shortcut icon">
-    <link type="text/css" href="{{ url_for('static', filename='css/styles.css')}}" rel="stylesheet" />
-    <link type="text/css" href="{{ url_for('static', filename='css/const.css')}}" rel="stylesheet" />
-    <title>{{name_app}} - {{title}}</title>
-</head>
-<body>
-    
-    <nav class="sidebar-container">
-        <h1>{{ name_app }}</h1>
-        <div>
-            <a class="underline-style" href="/">Главная</a>
-            <a class="underline-style" href="/transactions">Транзакции</a>
-            <a class="underline-style" href="/bonds">Облигации</a>
-            <a class="entry" href="/login" class="entry">Войти</a>
-        </div>
-    </nav>
+{% extends 'main.html' %}
+
+{% block main %} {% endblock %}
+
+{% block navigation %}
+<a class="underline-style" href="/assets">Активы</a>
+<a class="underline-style" href="/assets/bonds">Облигации</a>
+{% endblock %}
+
+{% block content %}
 
     <div class="about-program-container">
         <h2>Лицензия</h2>
@@ -380,5 +368,4 @@
                 распаковки, чтения или копирования.
                 </p>
     </div>
-</body>
-</html>
+{% endblock %}

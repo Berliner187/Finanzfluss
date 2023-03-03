@@ -1,0 +1,43 @@
+{% extends 'main.html' %}
+
+{% block main %} {% endblock %}
+
+{% block navigation %}
+<a class="underline-style" href="/licence">Лицензия</a>
+<a class="underline-style" href="/bonds">Облигации</a>
+{% endblock %}
+
+{% block content %}
+<div class="what-is-bond-container">
+    <div class="what-is-bond-container-head-info">
+        <img src="../static/img/what-are-bonds.png" alt="">
+        <div>
+            <h2>{{ what_are_bonds_title }}</h2>
+            {% for paragraph in what_are_bonds_text %}
+                <p>{{ paragraph }}</p><br>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="what-is-bond-container-other-information">
+        {% for key in texts %}
+        <div>
+            <h2>{{ key }}</h2>
+            {% for p in texts[key] %}
+                <p>{{ p }}</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="what-is-bond-container-resume">
+        {% for key in resume %}
+            <h2>{{ key }}</h2>
+            {% for p in resume[key] %}
+                <p>{{ p }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %} 

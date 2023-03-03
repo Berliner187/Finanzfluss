@@ -40,19 +40,6 @@ class DataBaseManager:
 
     # Создание таблицы
     def create_table(self, date_base, table):
-        """
-            id - Уникальный id облигации, меняется автоматически
-            TICKER - Тикер облигации
-            BOND - Название облигации
-            NOMINAL - Номинал облигации
-            AVERAGE PRICE - Стоимость на момент покупки (средняя в портфеле)
-            QUANTITY - Количество бумаг в портфеле
-            COUPON VALUE - Величина портфеля
-            ACI - НКД - Добавляется на момент покупки
-            number_of_payments_per_year - Кол-во выплат в год
-            total_payments - Всего выплат
-            date_of_purchase - Дата покупки
-        """
         cursor_data_base = self.get_cursor_db(date_base)
         cursor_data_base.execute(table)
 
