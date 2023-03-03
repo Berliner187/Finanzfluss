@@ -36,6 +36,9 @@ class AssetCalculation:
         return round(capitalization - self.investment_amount, 2)
 
 
+print(AssetCalculation(50_000, 13).calculation_monthly_capitalization(12))
+
+
 class PassiveCalculation:
     def __init__(self, amount, annual_rate, term):
         self.amount = amount
@@ -53,5 +56,5 @@ class PassiveCalculation:
 
 
 # print(AssetCalculation(59500, 6).calculation_capitalization(30))
-print(PassiveCalculation(20_000, 12, 36).monthly_payment())
+print(PassiveCalculation(50_000, 13, 12).monthly_payment())
 print(PassiveCalculation(20_000, 12, 36).total_overpayment())

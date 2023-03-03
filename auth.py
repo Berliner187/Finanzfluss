@@ -41,3 +41,7 @@ class Users:
     @staticmethod
     def select_from_table():
         return data_base.select_from_table(USERS_DATA_BASE, USERS_TABLE_NAME, '*')
+
+
+class Controller:
+    pass

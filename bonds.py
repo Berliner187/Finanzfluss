@@ -361,9 +361,9 @@ class SummaryAnalysisBondsOfIndicators:
         Данные выгружаются из базы данных.
     """
 
-    # Форматирование чисел (только для вывода)
     @staticmethod
     def format_number(number):
+        # Форматирование чисел (только для вывода)
         return '{0:,}'.format(number).replace(',', ' ').replace('.', ',')
 
     @staticmethod
@@ -373,8 +373,8 @@ class SummaryAnalysisBondsOfIndicators:
             array_saved_bonds.append(list(item))
         return array_saved_bonds
 
-    # Отображение сохраненных облигаций
     def return_saved_bonds_for_display(self):
+        # Отображение сохраненных облигаций
         array_saved_bonds = self.return_saved_bonds()
         format_array_saved_bonds = []
         for i in range(len(array_saved_bonds)):

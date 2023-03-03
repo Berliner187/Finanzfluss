@@ -161,5 +161,41 @@ class ResponseResultMOEX:
         return profit, maturity_date, coupon_payment_date, coupon
 
 
+def testing_pars():
+    # Идентификатор облигации
+    ticker = "RU000A103935"
+
+    import requests
+    from bs4 import BeautifulSoup
+
+    url = 'https://www.moex.com/ru/issue.aspx?board=TQCB&code=RU000A103935&language=ru'
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    # поиск элемента с номиналом облигации
+    nominal_element = soup.find('td', {'class': 'moex-data-table__td moex-data-table__td_with-change moex-data-table__td-with-change--up moex-cp__nominal'})
+
+    # поиск элемента с периодичностью выплаты купона
+    coupon_period_element = soup.find('td', {'class': 'moex-data-table__td moex-cp__coupon-period'})
+
+    if coupon_period_element is not None:
+        # получение текста элемента
+        coupon_period_text = coupon_period_element.text.strip()
+
+        # вывод результата
+        print(f"Периодичность выплаты купона в год: {coupon_period_text}")
+    else:
+        print("Элемент не найден на странице")
+
+    if nominal_element is not None:
+        # получение текста элемента
+        nominal_text = nominal_element.text.strip()
+
+        # вывод результата
+        print(f"Номинал облигации RU000A103935: {nominal_text}")
+    else:
+        print("Элемент не найден на странице")
+
 # mx-security-description
 # ResponseResultMOEX('RU000A105GV6').get_info()
