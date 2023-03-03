@@ -802,7 +802,7 @@ header {
     transition: .2s;
 }
 .login-container div a:hover, .login-container p a:hover {
-    color: #ABC270;
+    color: #979797;
 }
 
 #login, #password {
@@ -840,7 +840,7 @@ header {
 .btn-sub-white {
     cursor: pointer;
     transition: .3s;
-    background-color: #e2e2e2;
+    background-color: #000000;
     color: #ffffff;
 }
 .btn-sub-white:hover {
@@ -869,7 +869,7 @@ header {
 }
 
 .btn-sub-animated {
-    animation: moveInBottom 5s ease-out;
+    animation: moveInBottom .2s ease-out;
     animation-fill-mode: backwards;
 }
 

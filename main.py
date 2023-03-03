@@ -95,7 +95,7 @@ def signup():
                     for column in columns:
                         array_result_transmitted_data.append(request.form.get(column))
                     auth.Users.save_new_user(tuple(array_result_transmitted_data))
-                    # flash("Успешно!", category='success')
+
                     return redirect('/')
                 else:
                     flash("Пароли не совпадают", category='error')
@@ -257,8 +257,6 @@ def delete_bond(bond_id):
 
 @app.route('/assets/bonds/about/<string:ticker>')
 def about_bond(ticker):
-    start_time = time.time()
-
     bonds_db = db_manager.DataBaseManager()
 
     # Поиск данных об облигации из БД
@@ -266,11 +264,6 @@ def about_bond(ticker):
 
     # Экземпляр класса Контроллер, управляет бизнес-моделью и видом
     info_by_labels = bonds.BondsController()
-
-    iterable_time = 0.0009989738
-    get_from_db_time = round(time.time() - start_time, 10)
-    print(f"delta iterable_time and get_from_db_time: {round((get_from_db_time - iterable_time) / iterable_time * 100, 2)} %")
-    print(f"about_bond --- {round(time.time() - start_time, 10)} seconds")
 
     return render_template(
         'about-bond.html',
