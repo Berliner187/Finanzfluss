@@ -149,15 +149,18 @@ class Bonds:
     def get_summary_price(self, ticker):
         return round(self.average_price * self.quantity + self.get_aci_of_security_in_portfolio(ticker), 2)
 
+    def get_clean_summary_price(self):
+        return round(self.average_price * self.quantity, 2)
+
     def get_summary_price_for_display(self, ticker):
         return FormatNumber('cur').get_format(self.get_summary_price(ticker))
 
     # Получение доли бумаги в портфеле
-    def get_share_in_portfolio(self, ticker):
+    def get_share_in_portfolio(self):
         bond_instance = SummaryAnalysisBondsOfIndicators()
-        summary_invested_array = bond_instance.return_summary_price()
+        summary_invested_array = bond_instance.return_summary_price(False)
         summary_invested = sum(summary_invested_array)
-        return round(self.get_summary_price(ticker) * 100 / summary_invested, 2)
+        return round(self.get_clean_summary_price() * 100 / summary_invested, 2)
 
     def get_profitability(self):
         """
@@ -423,7 +426,7 @@ class SummaryAnalysisBondsOfIndicators:
     def profitability_per_year_by_sem_positions_for_display(self):
         summary_profit = self.profitability_per_year_by_sem_positions()
         summary_invested = 0
-        for i in self.return_summary_price():
+        for i in self.return_summary_price(False):
             summary_invested += i
         try:
             profit_percent = round(summary_profit * 100 / summary_invested, 2)
@@ -436,18 +439,21 @@ class SummaryAnalysisBondsOfIndicators:
             return '-'
 
     # Суммарно вложено
-    def return_summary_price(self):
+    def return_summary_price(self, aci):
         # !!! Изменить подход
         array_summary_price = []
         saved_bonds_array = self.return_saved_bonds()
         for bond_from_array in saved_bonds_array:
-            price = round((bond_from_array[4] * bond_from_array[5]) + bond_from_array[7], 2)
+            if aci:
+                price = round((bond_from_array[4] * bond_from_array[5]) + bond_from_array[7], 2)
+            else:
+                price = round((bond_from_array[4] * bond_from_array[5]), 2)
             array_summary_price.append(price)
         return array_summary_price
 
     # Суммарно вложено (для отображения)
     def return_summary_price_for_display(self):
-        array_summary_price = self.return_summary_price()
+        array_summary_price = self.return_summary_price(True)
         format_array_summary_price = []
         for price in array_summary_price:
             price = self.format_number(price)
@@ -483,7 +489,7 @@ class SummaryAnalysisBondsOfIndicators:
         summary_profit = round(summary_profit, 2)
         # Всего вложено
         summary_invested = 0
-        array_summary_price = self.return_summary_price()
+        array_summary_price = self.return_summary_price(True)
         for price in array_summary_price:
             summary_invested += price
         try:
@@ -498,13 +504,16 @@ class SummaryAnalysisBondsOfIndicators:
 
     # Расчет стоимости бумаг в портфеле
     def calculate_the_total_return_of_the_portfolio(self):
-        average_prices_array, quantities_array, aci_total_array = [], [], []
+        tickers_array, average_prices_array, quantities_array, aci_total_array = [], [], [], []
         summary = 0
 
         # Добавление необходимых параметров в массив для расчета вложенных средств
         def add_parameter_in_array(column_name, array):
             for elem in data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, column_name):
-                array.append(float("".join(map(str, elem))))
+                if column_name == 'ticker':
+                    array.append(str("".join(map(str, elem))))
+                else:
+                    array.append(float("".join(map(str, elem))))
 
         # Суммарная рыночная стоимость при покупке
         add_parameter_in_array('average_price', average_prices_array)
@@ -513,9 +522,16 @@ class SummaryAnalysisBondsOfIndicators:
         # Суммарный НКД при покупке
         add_parameter_in_array('aci', aci_total_array)
 
+        add_parameter_in_array('ticker', tickers_array)
+        print(tickers_array)
+
+        bond_data_array = data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*')
+
         # Расчет вложенных средств
-        for price, quantity, aci in zip(average_prices_array, quantities_array, aci_total_array):
-            summary += (price * quantity) + aci
+        for price, quantity, ticker, bond in zip(average_prices_array, quantities_array, tickers_array, bond_data_array):
+            bond_calculate = Bonds(bond)
+            aci = bond_calculate.get_aci(ticker)
+            summary += (price * quantity) + (aci * quantity)
 
         return round(summary, 2)
 
@@ -660,7 +676,7 @@ class BondsController:
             'ticker': ticker,
             'name': bond[2],
             'total_invested': ['Суммарная стоимость', format_currency.get_format(calculation.get_summary_price(ticker))],
-            'share_in_portfolio': format_percent.get_format(calculation.get_share_in_portfolio(ticker))
+            'share_in_portfolio': format_percent.get_format(calculation.get_share_in_portfolio())
         }
 
         ### ЛЕЙБЛ: О ВЫПУСКЕ ###
