@@ -523,7 +523,6 @@ class SummaryAnalysisBondsOfIndicators:
         add_parameter_in_array('aci', aci_total_array)
 
         add_parameter_in_array('ticker', tickers_array)
-        print(tickers_array)
 
         bond_data_array = data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*')
 

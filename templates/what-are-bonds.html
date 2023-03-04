@@ -12,9 +12,11 @@
     <div class="what-is-bond-container-head-info">
         <img src="../static/img/what-are-bonds.png" alt="">
         <div>
-            <h2>{{ what_are_bonds_title }}</h2>
-            {% for paragraph in what_are_bonds_text %}
-                <p>{{ paragraph }}</p><br>
+            {% for heading, paragraph in what_are_bonds_text.items() %}
+                <h2>{{ heading }}</h2>
+                {% for i in range(paragraph | length) %}
+                    <p>{{ paragraph[i] }}</p><br>
+                {% endfor %}
             {% endfor %}
         </div>
     </div>

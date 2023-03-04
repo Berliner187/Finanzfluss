@@ -172,7 +172,6 @@ def testing_pars():
     from bs4 import BeautifulSoup
 
     url = 'https://www.moex.com/ru/issue.aspx?board=TQCB&code=RU000A103935&language=ru'
-    headers = {'User-Agent': 'Mozilla/5.0'}
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
 

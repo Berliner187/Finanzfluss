@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+
 """
     Finanzfluss - Finance Flow App
     Приложение позволяет управлять денежными потоками, рассчитывать доход от активов,
@@ -10,17 +11,19 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 """
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager
-import time
-import bonds
-import db_manager
-from bonds import COLUMNS_TABLE_BONDS
-from bonds import RequestProcessingInDataBase
 from werkzeug.security import generate_password_hash, check_password_hash
 import parser
 
 import auth
+import bonds
+import db_manager
+
+from bonds import COLUMNS_TABLE_BONDS
+from bonds import RequestProcessingInDataBase
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -115,12 +118,8 @@ def index():
 
 @app.route('/assets')
 def assets_blyat():
-    start_time = time.time()
-
     bond = bonds.SummaryAnalysisBondsOfIndicators()
     bonds_controller = bonds.BondsController()
-
-    print(f"about_bond --- {round(time.time() - start_time, 8)} seconds")
 
     return render_template(
         'assets.html',
@@ -138,12 +137,13 @@ def assets_blyat():
 
 @app.route('/assets/what-are-bonds')
 def what_are_bonds():
-    what_are_bonds_title = 'Что такое облигации'
-    what_are_bonds_text_array = [
-        'Облигации – это ценные бумаги, которые выпускаются государством или компанией для привлечения средств на развитие или текущую деятельность.',
-        'Облигации являются одним из наиболее распространенных инструментов инвестирования, который позволяет зарабатывать на разнице между ценой покупки и продажи ценных бумаг, а также на выплачиваемых процентах.',
-        'Одним из основных параметров облигаций является купонная ставка, которая представляет собой процент, выплачиваемый инвестору за пользование его деньгами. Также важным параметром является срок облигации, который определяет, через какой период времени произойдет ее погашение и инвестор получит обратно вложенные средства.'
-    ]
+    what_are_bonds_text = {
+        'Что такое облигации': [
+            'Облигации – это ценные бумаги, которые выпускаются государством или компанией для привлечения средств на развитие или текущую деятельность.',
+            'Облигации являются одним из наиболее распространенных инструментов инвестирования, который позволяет зарабатывать на разнице между ценой покупки и продажи ценных бумаг, а также на выплачиваемых процентах.',
+            'Одним из основных параметров облигаций является купонная ставка, которая представляет собой процент, выплачиваемый инвестору за пользование его деньгами. Также важным параметром является срок облигации, который определяет, через какой период времени произойдет ее погашение и инвестор получит обратно вложенные средства.'
+        ]
+    }
 
     text_dict = {
         'Сравнение со вкладами':
@@ -184,7 +184,7 @@ def what_are_bonds():
             ]
     }
 
-    # КОСТЫЛЬ
+    # КОСТЫЛЬ (автоматическая нумерация списка)
     cnt = s = 0
     key = 'На что обратить внимание'
     for row in text_dict[key]:
@@ -198,9 +198,8 @@ def what_are_bonds():
         name_app=NAME_APP,
         header_link='Войти',
         header_redirect='/login',
-        title=what_are_bonds_title,
-        what_are_bonds_title=what_are_bonds_title,
-        what_are_bonds_text=what_are_bonds_text_array,
+        title=what_are_bonds_text.keys(),
+        what_are_bonds_text=what_are_bonds_text,
         texts=text_dict,
         resume=resume_dict
     )
@@ -208,8 +207,6 @@ def what_are_bonds():
 
 @app.route('/assets/bonds', methods=['POST', 'GET'])
 def assets():
-    start_time = time.time()
-
     if request.method == 'POST':
         # Получение параметров облигации
         array_result_transmitted_data = []
@@ -230,7 +227,6 @@ def assets():
     bond = bonds.SummaryAnalysisBondsOfIndicators()
     bonds_controller = bonds.BondsController()
 
-    print(f"about_bond --- {round(time.time() - start_time, 5)} seconds")
     return render_template(
         'bonds.html',
         name_app=NAME_APP,
@@ -241,6 +237,18 @@ def assets():
         summary_price=bond.return_summary_price_for_display(),
         profitability_per_year=bond.profitability_per_year_for_display(),
         bonds_frame=bonds_controller.bonds_frame()
+    )
+
+
+@app.route('/assets/bonds/analytics')
+def anal_bonds():
+    bond = bonds.SummaryAnalysisBondsOfIndicators()
+    bonds_controller = bonds.BondsController()
+
+    return render_template(
+        'bonds-analytics.html',
+        title='Анал',
+        bond_ticker='RU000A'
     )
 
 
