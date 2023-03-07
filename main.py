@@ -15,6 +15,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
+import random
 import parser
 
 import auth
@@ -27,15 +28,13 @@ from bonds import RequestProcessingInDataBase
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['SECRET_KEY'] = 'ev8wvg9dvhsvsklvnsdjvn'
+symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+random_symbols = ''
+for i in range(16):
+    random_symbols = random.choice(symbols)
+app.config['SECRET_KEY'] = random_symbols
 
 NAME_APP = 'Finanzfluss'
-
-CATEGORIES_WASTES, CATEGORIES_RECEIPTS = [], []
-
-""" 
-    КАТЕГОРИИ ТРАНЗАКЦИЙ
-"""
 
 
 @app.route('/login', methods=["POST", "GET"])
@@ -260,7 +259,11 @@ def delete_bond(bond_id):
         return redirect("/assets/bonds")
     except Exception as e:
         split_error = "Ошибка при удалении: Не удалось удалить облигацию из базы данных."
-        return render_template('error.html', error_code=split_error[0], error_text=split_error[1])
+        return render_template(
+            'error.html',
+            error_code=split_error[0],
+            error_text=split_error[1]
+        )
 
 
 @app.route('/assets/bonds/about/<string:ticker>')
@@ -292,12 +295,14 @@ def about():
                  'в приложение и получать детальные отчеты о своей финансовой активности. FinanceFlow поможет' \
                  ' вам оставаться в курсе вашей финансовой ситуации и позволит вам принимать более обоснованные' \
                  ' финансовые решения.'
-    return render_template('about.html',
-                           name_app=NAME_APP,
-                           header_link='Войти',
-                           header_redirect='/login',
-                           title=title,
-                           text_about=text_about)
+    return render_template(
+        'about.html',
+        name_app=NAME_APP,
+        header_link='Войти',
+        header_redirect='/login',
+        title=title,
+        text_about=text_about
+    )
 
 
 @app.route('/licence')
@@ -307,7 +312,8 @@ def licence():
         name_app=NAME_APP,
         title='Лицензия',
         header_link='Войти',
-        header_redirect='/login')
+        header_redirect='/login'
+    )
 
 
 @app.errorhandler(404)
@@ -321,7 +327,8 @@ def page_not_found(error):
         header_link='Войти',
         header_redirect='/login',
         error_code=split_error[0],
-        error_text=split_error[1])
+        error_text=split_error[1]
+    )
 
 
 if __name__ == '__main__':
