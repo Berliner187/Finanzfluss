@@ -246,11 +246,11 @@ class Bonds:
     def get_cnt_days(self, ticker):
         payment_period = 0
         if self.number_of_payments_per_year == 2:
-            payment_period = 182
+            payment_period = 184
         elif self.number_of_payments_per_year == 4:
-            payment_period = 91
+            payment_period = 92
         elif self.number_of_payments_per_year == 12:
-            payment_period = 29.5
+            payment_period = 31
 
         response = ResponseResultMOEX(ticker).get_info()
         maturity_date_ar = response[1][1].split('.')   # Дата погашения
@@ -312,29 +312,29 @@ class Bonds:
 
         return remaining_payments
 
-    def get_aci(self, ticker):
+    def get_aci(self):
         # НКД = (Номинал * Купонная ставка * Дней между выплатами купонов) / (Дней в году)
         if datetime.datetime.now().year % 4 == 0:
             days_in_year = 366
         else:
             days_in_year = 365
         # Ответ с MOEX
-        response_moex = ResponseResultMOEX(ticker).get_info()
+        response_moex = ResponseResultMOEX(self.ticker).get_info()
         # Задаем даты
         coupon_date = datetime.datetime.strptime(response_moex[2][1], '%d.%m.%Y')
         today = datetime.datetime.today()
         # Возвращает: периодичность выплаты купона и дней до погашения
-        payment_period, days_before_maturity = self.get_cnt_days(ticker)
+        payment_period, days_before_maturity = self.get_cnt_days(self.ticker)
         # Расчет кол-ва дней с момента выплаты последнего купона
         days_to_coupon = payment_period - (coupon_date - today).days
         # Расчет НКД и возвращение его
         return round((self.nominal * (self.nominal_profitability() / 100) * days_to_coupon/days_in_year), 2)
 
-    def get_aci_for_display(self, ticker):
-        return FormatNumber('cur').get_format(self.get_aci(ticker))
+    def get_aci_for_display(self):
+        return FormatNumber('cur').get_format(self.get_aci())
 
     def get_aci_of_security_in_portfolio(self, ticker):
-        return round(self.get_aci(ticker) * self.quantity, 2)
+        return round(self.get_aci() * self.quantity, 2)
 
     # Весь НКД бумаги в портфеле (НКД на шт. * кол-во)
     def get_aci_of_security_in_portfolio_for_display(self, ticker):
@@ -397,7 +397,7 @@ class SummaryAnalysisBondsOfIndicators:
         array_coupon_income, array_profit_percent = [], []
         array_saved_bonds = self.return_saved_bonds()
         for item in array_saved_bonds:
-            coupon_income = (item[6] * item[5]) * item[8]
+            coupon_income = (item[6] * item[5] * item[8])
             invested = (item[4] * item[5])
             profit_percent = round(coupon_income * 100 / invested, 2)
             array_coupon_income.append(round(coupon_income, 2))
@@ -421,6 +421,7 @@ class SummaryAnalysisBondsOfIndicators:
         array_coupon_income = self.return_profitability_per_year()
         for profit in array_coupon_income[0]:
             summary += profit
+        print('Summary', summary)
         return summary
 
     def profitability_per_year_by_sem_positions_for_display(self):
@@ -436,7 +437,7 @@ class SummaryAnalysisBondsOfIndicators:
             profit_percent = self.format_number(profit_percent)
             return f'{summary_profit} ₽ • {profit_percent} % — за год'
         except ZeroDivisionError:
-            return '-'
+            return 0
 
     # Суммарно вложено
     def return_summary_price(self, aci):
@@ -444,8 +445,9 @@ class SummaryAnalysisBondsOfIndicators:
         array_summary_price = []
         saved_bonds_array = self.return_saved_bonds()
         for bond_from_array in saved_bonds_array:
+            bond = Bonds(bond_from_array)
             if aci:
-                price = round((bond_from_array[4] * bond_from_array[5]) + bond_from_array[7], 2)
+                price = round((bond_from_array[4] * bond_from_array[5]) + (bond.get_aci() * bond_from_array[5]), 2)
             else:
                 price = round((bond_from_array[4] * bond_from_array[5]), 2)
             array_summary_price.append(price)
@@ -527,9 +529,10 @@ class SummaryAnalysisBondsOfIndicators:
         bond_data_array = data_base.select_from_table(BONDS_DATA_BASE, BONDS_TABLE_NAME, '*')
 
         # Расчет вложенных средств
-        for price, quantity, ticker, bond in zip(average_prices_array, quantities_array, tickers_array, bond_data_array):
+        for price, quantity, ticker, bond in zip(
+                average_prices_array, quantities_array, tickers_array, bond_data_array):
             bond_calculate = Bonds(bond)
-            aci = bond_calculate.get_aci(ticker)
+            aci = bond_calculate.get_aci()
             summary += (price * quantity) + (aci * quantity)
 
         return round(summary, 2)
@@ -705,7 +708,7 @@ class BondsController:
         ### ЛЕЙБЛ: ПОКАЗАТЕЛИ ###
         indicators = {
             'aci':
-                ['Накопленный купонный доход', calculation.get_aci_for_display(ticker)],
+                ['Накопленный купонный доход', calculation.get_aci_for_display()],
             'difference_nominal_and_price':
                 ['Разность номинала и цены', calculation.get_nominal_value_difference_for_display()],
             'monthly_income':
