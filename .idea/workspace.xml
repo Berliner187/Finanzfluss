@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4021384e-3d8d-44b8-a541-9cd214aa3c62" name="Changes" comment="" />
+    <list default="true" id="4021384e-3d8d-44b8-a541-9cd214aa3c62" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bonds.py" beforeDir="false" afterPath="$PROJECT_DIR$/bonds.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/bonds.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/bonds.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/what-are-bonds.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/what-are-bonds.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -42,7 +48,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.ide.settings.new.ui&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.main (1)">
+  <component name="RunManager" selected="Python.main">
     <configuration name="bonds" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Finanzfluss" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -150,8 +156,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main (1)" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.main (1)" />
         <item itemvalue="Python.tester" />
         <item itemvalue="Python.bonds" />
         <item itemvalue="Python.parser" />
