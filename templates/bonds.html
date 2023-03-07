@@ -12,13 +12,16 @@
     
     <!-- Карточки слева -->
     <div class="cards-container-left">
+        <!-- Портфель -->
         <div class="card-container left-cards blue">
             {% for key in bonds_frame[0] %}
                 <h2>{{ key }}</h2>
                 <span id="amount_portfolio">{{ bonds_frame[0][key] }}</span>
+                <!-- <span>Погрешность вычислений ~0,6%</span> -->
             {% endfor %}
             <a href="/assets/bonds/analytics" class="entry">Аналитика</a>
         </div>
+        <!-- Доходность -->
         <div class="card-container left-cards green">
             {% for key in bonds_frame[1] %}
                 <h2>{{ key }}</h2>
@@ -27,6 +30,7 @@
             {% endfor %}
             <a href="/assets/bonds/statistics}}" class="entry">Посмотреть статистику</a>
         </div>
+        <!-- Календарь -->
         <div class="card-container left-cards violet">
             {% for calendar in bonds_frame[2] %}
                 <h2>{{ calendar }}</h2>
