@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4021384e-3d8d-44b8-a541-9cd214aa3c62" name="Changes" comment="">
+    <list default="true" id="31ddf1f4-8ab7-4abb-af50-8edce721bfc0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bonds.py" beforeDir="false" afterPath="$PROJECT_DIR$/bonds.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/bonds.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/bonds.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/what-are-bonds.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/what-are-bonds.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -167,7 +165,7 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="4021384e-3d8d-44b8-a541-9cd214aa3c62" name="Changes" comment="" />
+      <changelist id="31ddf1f4-8ab7-4abb-af50-8edce721bfc0" name="Changes" comment="" />
       <created>1675005696918</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />

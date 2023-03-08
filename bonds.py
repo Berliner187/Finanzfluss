@@ -421,7 +421,6 @@ class SummaryAnalysisBondsOfIndicators:
         array_coupon_income = self.return_profitability_per_year()
         for profit in array_coupon_income[0]:
             summary += profit
-        print('Summary', summary)
         return summary
 
     def profitability_per_year_by_sem_positions_for_display(self):

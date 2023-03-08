@@ -24,17 +24,25 @@ import db_manager
 
 from bonds import COLUMNS_TABLE_BONDS
 from bonds import RequestProcessingInDataBase
+from flask_sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-random_symbols = ''
-for i in range(16):
-    random_symbols = random.choice(symbols)
-app.config['SECRET_KEY'] = random_symbols
+# symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+# random_symbols = ''
+# for i in range(16):
+#     random_symbols = random.choice(symbols)
+# app.config['SECRET_KEY'] = random_symbols
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:admin@localhost/sweater'
+db = SQLAlchemy(app)
 
 NAME_APP = 'Finanzfluss'
+
+
+class Users(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user = db.Column(db.String(), unique=True)
 
 
 @app.route('/login', methods=["POST", "GET"])
